@@ -477,15 +477,13 @@ function draftTeam(r){
   state.drafted[r]=true;state.draftedBy[r]=p;
   const name=r<TEAMS.length?TEAMS[r].University:SPECIAL_TEAM.University;
   state.draftedTeams[p]=name;addLog(`${p} drafted ${name}!`);
-  removePlayer(p);save();showCelebration(p,name);
+  removePlayer(p);save();showCelebration(p,name,endTurn);
 }
 
 function draftHugeAdv(){
   const p=cp(),team=ADV[p];
   state.draftedTeams[p]=team;addLog(`${p} CHOSE HUGE ADVANTAGE: ${team}`);
-  removePlayer(p);save();showCelebration(p,team+' ⭐');
-  showModal('HUGE ADVANTAGE TEAM',`<div class="advReveal">${p}<br>CHOSE A HUGE ADVANTAGE TEAM<br><br>${team}</div>`,
-    [['Continue','yes',()=>{closeModal();render()}]]);
+  removePlayer(p);save();showCelebration(p,team+' ⭐',endTurn);
 }
 
 function draftSpecial(){
@@ -494,7 +492,7 @@ function draftSpecial(){
   const r=TEAMS.length;
   for(let c=0;c<COLS.length;c++)state.revealed[r+'-'+c]=true;
   state.drafted[r]=true;state.draftedBy[r]=p;state.draftedTeams[p]='North Dakota State';
-  addLog(`${p} drafted North Dakota State!`);removePlayer(p);save();showCelebration(p,'North Dakota State ⭐');
+  addLog(`${p} drafted North Dakota State!`);removePlayer(p);save();showCelebration(p,'North Dakota State ⭐',endTurn);
 }
 
 function removePlayer(p){
@@ -505,16 +503,20 @@ function removePlayer(p){
   state.turnEndsAt=Date.now()+60000;
 }
 
-function showCelebration(player,team){
-  broadcastDraftVideo(player,team);
+function showCelebration(player,team,onDone){
   SFX.draft();launchConfetti(COLORS[player]);
-  const div=document.getElementById('celDiv'),box=document.getElementById('celBox');
-  document.getElementById('celWho').textContent=player;document.getElementById('celWho').style.color=COLORS[player];
-  document.getElementById('celTeam').textContent=team;document.getElementById('celTeam').style.color=COLORS[player];
-  document.getElementById('celPts').textContent=state.points[player]+' pts remaining';
-  box.style.border=`2px solid ${COLORS[player]}`;box.style.background=`linear-gradient(180deg,${COLORS[player]}22,#0d1828)`;
-  div.classList.remove('hidden');div.onclick=()=>{div.classList.add('hidden');render()};
-  setTimeout(()=>{if(!div.classList.contains('hidden')){div.classList.add('hidden');render()}},5000);
+  if(TEAM_VIDEOS[team]){
+    broadcastDraftVideo(player,team,onDone);
+  }else{
+    const div=document.getElementById('celDiv'),box=document.getElementById('celBox');
+    document.getElementById('celWho').textContent=player;document.getElementById('celWho').style.color=COLORS[player];
+    document.getElementById('celTeam').textContent=team;document.getElementById('celTeam').style.color=COLORS[player];
+    document.getElementById('celPts').textContent=state.points[player]+' pts remaining';
+    box.style.border=`2px solid ${COLORS[player]}`;box.style.background=`linear-gradient(180deg,${COLORS[player]}22,#0d1828)`;
+    div.classList.remove('hidden');
+    const dismiss=()=>{div.classList.add('hidden');if(onDone)onDone();render()};
+    div.onclick=dismiss;setTimeout(dismiss,4000);
+  }
 }
 
 function endTurn(){
@@ -582,6 +584,7 @@ function resetBoardConfirm(){
 function updateTimer(){
   const p=cp(),el=document.getElementById('clock'),bar=document.getElementById('tpf');
   if(!p){el.textContent='DONE';el.className='clock';if(bar)bar.style.width='0%';return}
+  if(window._videoPlaying){state.turnEndsAt=Date.now()+60000;el.textContent='1:00';el.className='clock';if(bar){bar.style.width='100%';bar.style.background='#4ade80'}return}
   const left=Math.max(0,Math.ceil((state.turnEndsAt-Date.now())/1000));
   const mm=Math.floor(left/60),ss=left%60;
   el.textContent=mm+':'+String(ss).padStart(2,'0');
@@ -596,7 +599,9 @@ function updateTimer(){
 }
 
 // ── Draft video ──
-function playDraftVideo(player,team,videoSrc){
+window._videoPlaying=false;
+
+function playDraftVideo(player,team,videoSrc,onDone){
   const wrap=document.getElementById('draftVideo');
   const vid=document.getElementById('draftVid');
   document.getElementById('draftVidWho').textContent=player;
@@ -605,6 +610,8 @@ function playDraftVideo(player,team,videoSrc){
   document.getElementById('draftVidTeam').style.color=COLORS[player]||'#fff';
   vid.src=videoSrc;
   wrap.style.display='flex';
+  window._videoPlaying=true;
+  window._videoDone=onDone||null;
   vid.play().catch(()=>{});
   vid.onended=()=>closeDraftVideo();
 }
@@ -612,13 +619,16 @@ function closeDraftVideo(){
   const wrap=document.getElementById('draftVideo'),vid=document.getElementById('draftVid');
   vid.pause();vid.src='';
   wrap.style.display='none';
+  window._videoPlaying=false;
+  if(state){state.turnEndsAt=Date.now()+60000;save();}
+  if(window._videoDone){const cb=window._videoDone;window._videoDone=null;cb();}
   render();
 }
-function broadcastDraftVideo(player,team){
+function broadcastDraftVideo(player,team,onDone){
   const src=TEAM_VIDEOS[team];
-  if(!src)return;
+  if(!src){if(onDone)onDone();return;}
   if(window._fbVideoRef)window._fbVideoRef.set({player,team,src,t:Date.now()}).catch(()=>{});
-  playDraftVideo(player,team,src);
+  playDraftVideo(player,team,src,onDone);
 }
 
 
@@ -644,7 +654,7 @@ buildHeader();
       if(!d||!d.src||!d.t)return;
       if(window._lastVidT&&d.t===window._lastVidT)return;
       window._lastVidT=d.t;
-      playDraftVideo(d.player,d.team,d.src);
+      playDraftVideo(d.player,d.team,d.src,()=>{if(state){state.turnEndsAt=Date.now()+60000;save();render()}});
     });
     db.ref('.info/connected').on('value',s=>{const d=dot();if(d)d.className='connDot '+(s.val()?'on':'off')});
     ref.get().then(snap=>{
