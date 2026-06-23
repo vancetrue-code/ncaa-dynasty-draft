@@ -137,7 +137,6 @@ td.dc{background:#0b1a2e}
 </head>
 <body>
 <canvas id="confetti"></canvas>
-<audio id="bgm" src="theme.mp3" loop preload="auto"></audio>
 <audio id="yourturn" src="yourturn.mp3" preload="auto"></audio>
 
 <div class="app">
@@ -240,6 +239,9 @@ const SFX=(()=>{
     event(){tone(180,.4,'sawtooth',.28);tone(140,.6,'sawtooth',.22,.3)},
     draft(){[523,659,784,1047,1319].forEach((f,i)=>tone(f,.25,'triangle',.3,i*.09))},
     lock(){tone(330,.15,'square',.14);tone(247,.35,'square',.1,.12)},
+    tick(){tone(1200,.04,'sine',.12)},
+    tickUrgent(){tone(1400,.04,'sine',.2);tone(700,.08,'sine',.1,.05)},
+    buzz(){[180,140,100].forEach((f,i)=>tone(f,.35,'sawtooth',.35,i*.12))},
     warn(){tone(880,.04,'square',.07)},
     penalty(){tone(220,.2,'sawtooth',.22);tone(180,.3,'sawtooth',.18,.18)},
     yourTurn(){[392,523,659,784].forEach((f,i)=>tone(f,.2,'triangle',.25,i*.08))}
@@ -293,7 +295,6 @@ function buildHeader(){
     if(IS_ADMIN)html+=` <span class="badge">⚙ Commissioner</span>`;
     html+=`</div>`;
     if(IS_ADMIN)html+=`<button class="adminBtn" onclick="toggleAdmin()">⚙ Admin Panel</button>`;
-    html+=`<button class="adminBtn" id="muteBtn" onclick="toggleMusic()" style="margin-top:5px;border-color:#355071;color:var(--muted)">🔊 Music</button>`;
   }else{
     html+=`<div class="identity"><span class="badge">Spectator</span></div>`;
   }
@@ -581,8 +582,12 @@ function updateTimer(){
   el.textContent=mm+':'+String(ss).padStart(2,'0');
   el.className='clock'+(left<=10?' danger':left<=20?' warn':'');
   if(bar){bar.style.width=(left/60*100)+'%';bar.style.background=left<=10?'var(--red)':left<=20?'var(--gold)':'var(--green)'}
-  if(left<=10&&left>0&&left%2===0)SFX.warn();
-  if(left<=0){state.turnEndsAt=Date.now()+999999;timeoutTurn()}
+  if(left>0){
+    if(left<=5)SFX.tickUrgent();
+    else if(left<=15)SFX.tick();
+    else if(left<=30&&left%2===0)SFX.warn();
+  }
+  if(left<=0){SFX.buzz();state.turnEndsAt=Date.now()+999999;timeoutTurn()}
 }
 
 // ── Draft video ──
@@ -611,21 +616,6 @@ function broadcastDraftVideo(player,team){
   playDraftVideo(player,team,src);
 }
 
-// ── Music ──
-function startMusic(){
-  const bgm=document.getElementById('bgm');
-  if(!bgm||!bgm.paused)return;
-  bgm.volume=0.004;
-  bgm.play().catch(()=>{});
-}
-document.addEventListener('touchstart',startMusic,{once:true});
-document.addEventListener('click',startMusic,{once:true});
-function toggleMusic(){
-  const bgm=document.getElementById('bgm'),btn=document.getElementById('muteBtn');
-  if(!bgm)return;
-  if(bgm.paused){bgm.play();if(btn)btn.textContent='🔊 Music'}
-  else{bgm.pause();if(btn)btn.textContent='🔇 Music'}
-}
 
 // ── Init ──
 buildHeader();
