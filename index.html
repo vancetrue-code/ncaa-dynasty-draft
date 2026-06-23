@@ -138,6 +138,7 @@ td.dc{background:#0b1a2e}
 <body>
 <canvas id="confetti"></canvas>
 <audio id="bgm" src="theme.mp3" loop preload="auto"></audio>
+<audio id="yourturn" src="yourturn.mp3" preload="auto"></audio>
 
 <div class="app">
   <header id="header"></header>
@@ -297,7 +298,8 @@ function checkYourTurn(){
 }
 function showYourTurn(){
   if(navigator.vibrate)navigator.vibrate([200,100,200]);
-  SFX.yourTurn();
+  const yt=document.getElementById('yourturn');
+  if(yt){yt.currentTime=0;yt.volume=0.9;yt.play().catch(()=>{})}else SFX.yourTurn();
   const div=document.getElementById('ytDiv'),box=document.getElementById('ytBox');
   document.getElementById('ytName').textContent=MY_NAME;
   document.getElementById('ytName').style.color=COLORS[MY_NAME];
@@ -571,7 +573,7 @@ function updateTimer(){
 function startMusic(){
   const bgm=document.getElementById('bgm');
   if(!bgm||!bgm.paused)return;
-  bgm.volume=0.35;
+  bgm.volume=0.06;
   bgm.play().catch(()=>{});
 }
 document.addEventListener('touchstart',startMusic,{once:true});
