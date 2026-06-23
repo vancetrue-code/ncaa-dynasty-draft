@@ -578,7 +578,10 @@ function undoLast(){
   state=JSON.parse(h);state.history=old;prevPoints={...state.points};save();render();showToast('↩ Undo applied');
 }
 function resetBoardConfirm(){
-  if(confirm('Reset the full board? This cannot be undone.')){state=freshState();prevPoints={...state.points};save();render()}
+  if(confirm('Reset the full board? This cannot be undone.')){
+    state=freshState();prevPoints={...state.points};save();render();
+    if(window._fbVideoRef)window._fbVideoRef.remove().catch(()=>{});
+  }
 }
 
 // ── Timer ──
@@ -650,9 +653,11 @@ buildHeader();
     window._fbRef=ref;
     const vidRef=db.ref('game/video');
     window._fbVideoRef=vidRef;
+    const _pageLoadT=Date.now();
     vidRef.on('value',snap=>{
       const d=snap.val();
       if(!d||!d.src||!d.t)return;
+      if(d.t<_pageLoadT)return;
       if(window._lastVidT&&d.t===window._lastVidT)return;
       window._lastVidT=d.t;
       playDraftVideo(d.player,d.team,d.src,()=>{if(state){state.turnEndsAt=Date.now()+60000;save();render()}});
