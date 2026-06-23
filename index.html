@@ -137,6 +137,7 @@ td.dc{background:#0b1a2e}
 </head>
 <body>
 <canvas id="confetti"></canvas>
+<audio id="bgm" src="theme.mp3" loop preload="auto"></audio>
 
 <div class="app">
   <header id="header"></header>
@@ -276,6 +277,7 @@ function buildHeader(){
     if(IS_ADMIN)html+=` <span class="badge">⚙ Commissioner</span>`;
     html+=`</div>`;
     if(IS_ADMIN)html+=`<button class="adminBtn" onclick="toggleAdmin()">⚙ Admin Panel</button>`;
+    html+=`<button class="adminBtn" id="muteBtn" onclick="toggleMusic()" style="margin-top:5px;border-color:#355071;color:var(--muted)">🔊 Music</button>`;
   }else{
     html+=`<div class="identity"><span class="badge">Spectator</span></div>`;
   }
@@ -563,6 +565,22 @@ function updateTimer(){
   if(bar){bar.style.width=(left/60*100)+'%';bar.style.background=left<=10?'var(--red)':left<=20?'var(--gold)':'var(--green)'}
   if(left<=10&&left>0&&left%2===0)SFX.warn();
   if(left<=0){state.turnEndsAt=Date.now()+999999;timeoutTurn()}
+}
+
+// ── Music ──
+function startMusic(){
+  const bgm=document.getElementById('bgm');
+  if(!bgm||!bgm.paused)return;
+  bgm.volume=0.35;
+  bgm.play().catch(()=>{});
+}
+document.addEventListener('touchstart',startMusic,{once:true});
+document.addEventListener('click',startMusic,{once:true});
+function toggleMusic(){
+  const bgm=document.getElementById('bgm'),btn=document.getElementById('muteBtn');
+  if(!bgm)return;
+  if(bgm.paused){bgm.play();if(btn)btn.textContent='🔊 Music'}
+  else{bgm.pause();if(btn)btn.textContent='🔇 Music'}
 }
 
 // ── Init ──
