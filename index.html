@@ -1,120 +1,894 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
 <meta charset="utf-8">
-<title>NCAA Dynasty Draft Show TRUE LIVE</title>
+<title>NCAA Dynasty Draft Show</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;600;700&family=Barlow+Condensed:wght@600;800;900&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>
-:root{--line:#355071;--gold:#ffcc45;--green:#52d273;--red:#ff6565;--text:#eef6ff;--muted:#a9bdd4;--draftW:92px;--uniW:96px;--cellW:104px;--cellH:66px}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;margin:0;overflow:hidden}
-body{font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at top,#173050,#07111f 58%);color:var(--text)}
+:root{--line:#1e3a5f;--line2:#2a4f7a;--gold:#ffcc45;--green:#4ade80;--red:#f87171;--text:#eef6ff;--muted:#7aa3c8;--field:#0f3d0f;--turf:#1a5c1a;--draftW:88px;--uniW:104px;--cellW:112px;--cellH:72px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0;touch-action:manipulation;-webkit-touch-callout:none;user-select:none}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Barlow Condensed','Oswald',-apple-system,sans-serif;background:#07111f;color:var(--text);-webkit-text-size-adjust:100%}
 .app{height:100%;display:flex;flex-direction:column}
-header{padding:9px 10px 7px;border-bottom:1px solid var(--line);background:#07111f}
-h1{font-size:16px;margin:0}.sub{font-size:11px;color:var(--muted);margin-top:2px}
-.controls{display:grid;grid-template-columns:1fr auto;gap:6px;margin-top:7px}
-.idBox,button{border:1px solid var(--line);border-radius:10px;background:#0b1524;color:var(--text);min-height:36px;font-size:13px;font-weight:800;padding:8px}
-.adminBtn{background:#3a2f12;border-color:#8e7321}
-.scorebar{display:flex;gap:7px;padding:7px 9px;background:#08101c;border-bottom:1px solid var(--line);overflow-x:auto}
-.playerCard{min-width:104px;border:2px solid var(--line);border-radius:12px;padding:6px;background:#102039;text-align:center}
-.playerCard.active{box-shadow:0 0 0 2px rgba(255,204,69,.38);border-color:var(--gold)!important}.playerCard.out{opacity:.95}
-.playerName{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.playerPts{font-size:17px;font-weight:950;color:var(--gold)}
-.draftedTeamName{font-size:13px;font-weight:950;color:white;line-height:14px;margin-top:2px}.advTag{font-size:9px;color:#fff}
-.timerBar{display:flex;justify-content:space-between;align-items:center;padding:7px 10px;background:#0b1524;border-bottom:1px solid var(--line)}
-.turnText{font-size:13px;font-weight:900}.timer{font-size:26px;font-weight:1000;color:var(--green)}.timer.warn{color:var(--gold)}.timer.danger{color:var(--red)}
-.boardWrap{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:6px 8px 106px}
+
+/* ── Header ── */
+header{padding:8px 12px 8px;border-bottom:3px solid var(--turf);background:linear-gradient(180deg,#0a1828,#07111f);flex-shrink:0;border-top:4px solid var(--turf)}
+.hrow{display:flex;align-items:center;justify-content:space-between;gap:8px}
+h1{font-size:17px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;font-family:'Oswald',sans-serif;flex:1;background:linear-gradient(90deg,#fff,var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.connDot{width:7px;height:7px;border-radius:50%;background:#444;transition:background .5s;flex-shrink:0}
+.connDot.on{background:var(--green);box-shadow:0 0 6px var(--green)}
+.connDot.off{background:var(--red)}
+.identity{font-size:11px;margin-top:4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.idName{font-size:13px;font-weight:900}
+.badge{font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:20px;background:rgba(255,255,255,.07);border:1px solid var(--line2);color:var(--muted)}
+.adminBtn{background:rgba(255,180,0,.12);border:1px solid #8e7321;border-radius:8px;color:var(--gold);font-size:12px;font-weight:700;padding:5px 11px;cursor:pointer;margin-top:5px;display:block}
+
+/* ── Scorebar ── */
+.sbar{display:flex;gap:5px;padding:7px 10px;background:#060f1a;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none;flex-shrink:0}
+.sbar::-webkit-scrollbar{display:none}
+.pc{min-width:90px;border:2px solid var(--line);border-radius:12px;padding:7px 8px;background:#0d1e35;text-align:center;flex-shrink:0;transition:transform .2s,box-shadow .3s}
+.pc.act{transform:translateY(-2px);border-color:var(--gold)!important;animation:cardPulse 2s ease-in-out infinite}
+@keyframes cardPulse{0%,100%{box-shadow:0 0 0 2px rgba(255,204,69,.22),0 4px 14px rgba(255,204,69,.1)}50%{box-shadow:0 0 0 4px rgba(255,204,69,.38),0 4px 20px rgba(255,204,69,.2)}}
+.pn{font-size:9px;color:var(--muted);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;letter-spacing:.06em;text-transform:uppercase;font-family:'Oswald',sans-serif}
+.pp{font-size:20px;font-weight:700;color:var(--gold);line-height:1.1;font-family:'Oswald',sans-serif;letter-spacing:.04em}
+.pp.up{animation:fup .45s ease-out}
+.pp.dn{animation:fdn .45s ease-out}
+@keyframes fup{0%{color:var(--green);transform:scale(1.35)}100%{color:var(--gold);transform:scale(1)}}
+@keyframes fdn{0%{color:var(--red);transform:scale(1.2)}100%{color:var(--gold);transform:scale(1)}}
+.pt{font-size:10px;font-weight:800;line-height:1.2;margin-top:2px}
+.padv{font-size:8px;color:var(--gold);font-weight:700;margin-top:1px}
+
+/* ── Timer progress ── */
+.tpbar{height:3px;background:var(--line);flex-shrink:0}
+.tpfill{height:100%;background:var(--green);transition:width .5s linear,background .3s}
+
+/* ── Turn bar ── */
+.turnBar{display:flex;align-items:center;padding:6px 12px;background:linear-gradient(90deg,#060f1a,#0a1520,#060f1a);border-bottom:1px solid var(--turf);gap:8px;flex-shrink:0}
+.turnInfo{flex:1;min-width:0}
+.turnLabel{font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-family:'Oswald',sans-serif;display:block}
+.turnName{font-size:16px;font-weight:700;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:'Oswald',sans-serif;letter-spacing:.06em;text-transform:uppercase}
+.turnHint{font-size:9px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.clockWrap{text-align:right}
+.clockLabel{font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-family:'Oswald',sans-serif;display:block}
+.clock{font-size:28px;font-weight:700;color:var(--green);font-variant-numeric:tabular-nums;min-width:52px;font-family:'Oswald',sans-serif;letter-spacing:.04em;transition:color .3s;display:block}
+.clock.warn{color:var(--gold)}
+.clock.danger{color:var(--red);animation:tblink .5s ease-in-out infinite}
+@keyframes tblink{0%,100%{opacity:1}50%{opacity:.45}}
+
+/* ── Board ── */
+.boardWrap{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:5px 7px 110px}
 table{border-collapse:separate;border-spacing:4px;table-layout:fixed;min-width:calc(var(--draftW) + var(--uniW) + 17 * var(--cellW))}
-th,td{width:var(--cellW);min-width:var(--cellW);max-width:var(--cellW);height:var(--cellH);border-radius:10px;border:1px solid #2c4668;text-align:center;font-weight:950}
-th{position:sticky;top:0;z-index:4;background:#14243b;font-size:10px;line-height:11px;text-transform:uppercase;padding:4px}
-th.draftHead,td.draftCell{position:sticky;left:0;z-index:6;width:var(--draftW);min-width:var(--draftW);max-width:var(--draftW)}
-th.uniHead,td.uniCell{position:sticky;left:calc(var(--draftW) + 4px);z-index:5;width:var(--uniW);min-width:var(--uniW);max-width:var(--uniW)}
-th.draftHead,th.uniHead{z-index:8}td.draftCell{background:#102039}.draftBtn{width:100%;height:52px;border-radius:10px;background:#1f8f4e;border-color:#48d67f;color:white;font-size:11px;line-height:12px}.draftBtn:disabled{background:#555;border-color:#777;color:#aaa}
-.tile{background:linear-gradient(180deg,#1f3454,#152845);font-size:24px;cursor:pointer}.tile small{display:block;font-size:10px;color:#bdd3ee}.disabled{opacity:.38;filter:grayscale(.6)}
-.university{background:#101826;color:#8096af;font-size:12px}.revealed{background:linear-gradient(180deg,#173d2a,#0f281c);border-color:#3bae66;font-size:13px;line-height:14px;padding:4px;overflow:hidden;text-overflow:ellipsis}
-.locked{background:#3a3148;border-color:#c6a8ff;color:#d8c7ff;font-size:18px;cursor:pointer;line-height:18px}.locked small{display:block;font-size:9px;color:#fff;margin-top:2px}
-.drafted td{color:#fff!important;border-color:rgba(255,255,255,.55)!important}.specialRow td{background:#6a5015!important;border-color:#ffcc45!important}
-.bottomPanel{position:fixed;bottom:0;left:0;right:0;background:rgba(7,14,24,.98);border-top:1px solid var(--line);padding:9px 10px calc(9px + env(safe-area-inset-bottom));z-index:10}
-.message{font-size:13px;font-weight:950;line-height:16px;max-height:34px;overflow:hidden}.log{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.72);z-index:30;padding:14px}.hidden{display:none}
-.box{width:min(480px,96vw);background:#111c2e;border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 18px 60px rgba(0,0,0,.5)}
-.box h2{margin:0 0 8px;color:var(--gold);font-size:25px}.box p{font-size:15px;line-height:1.42;color:#d8e6f7}.actions{display:grid;gap:8px;margin-top:14px}.actions button{min-height:46px;font-size:15px}
-.yes{background:#1f8f4e;border-color:#48d67f}.no{background:#4a2330;border-color:#ff6565}.gold{background:#6a5015;border-color:#ffcc45}
-.adminPanel{position:fixed;left:8px;right:8px;bottom:95px;background:#101b2d;border:1px solid var(--gold);border-radius:16px;padding:12px;z-index:22}.adminGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.advReveal{font-size:30px;color:var(--gold);font-weight:1000;text-align:center;margin:14px 0}
-.turnFlash{animation:pulse 1s ease-in-out 3}@keyframes pulse{0%,100%{filter:brightness(1)}50%{filter:brightness(1.45)}}
-@media(min-width:700px){:root{--draftW:110px;--uniW:120px;--cellW:125px;--cellH:64px}h1{font-size:22px}}
+th,td{width:var(--cellW);min-width:var(--cellW);max-width:var(--cellW);height:var(--cellH);border-radius:9px;border:1px solid #1c3455;text-align:center;font-weight:900;vertical-align:middle}
+th{position:sticky;top:0;z-index:4;background:#0a1e35;font-size:8px;line-height:10px;text-transform:uppercase;padding:4px;color:var(--gold);letter-spacing:.07em;font-family:'Oswald',sans-serif;border-color:#1a5c1a}
+th.dh,td.dc{position:sticky;left:0;z-index:6;width:var(--draftW);min-width:var(--draftW);max-width:var(--draftW)}
+th.uh,td.uc{position:sticky;left:calc(var(--draftW) + 4px);z-index:5;width:var(--uniW);min-width:var(--uniW);max-width:var(--uniW)}
+th.dh,th.uh{z-index:8}
+td.dc{background:#0b1a2e}
+.draftBtn{width:100%;height:50px;border-radius:6px;background:linear-gradient(180deg,#1a5c1a,#0f3d0f);border:1px solid #2fd67a;color:#fff;font-size:12px;font-weight:700;cursor:pointer;transition:transform .1s,box-shadow .15s;line-height:13px;font-family:'Oswald',sans-serif;letter-spacing:.1em;text-transform:uppercase}
+.draftBtn:not(:disabled):active{transform:scale(.95);box-shadow:0 0 12px rgba(47,214,122,.4)}
+.draftBtn:disabled{background:#253040;border-color:#354055;color:#4a6080;cursor:default}
+.tile{background:linear-gradient(180deg,#0f2235,#0a1828);font-size:20px;cursor:pointer;transition:transform .1s,box-shadow .15s;border-color:#1a5c1a!important}
+.tile:not(.dis):active{transform:scale(.95);box-shadow:0 0 12px rgba(100,160,255,.22)}
+.tile small{display:block;font-size:11px;color:#8ab4d8;font-weight:700;margin-top:1px}
+.tile.dis{opacity:.25;filter:grayscale(.8);cursor:default}
+.unic{background:#0c1828;color:#5a7a9a;font-size:10.5px;font-weight:700}
+.rev{background:linear-gradient(180deg,#143322,#0c2218);border-color:#2a9954!important;font-size:11px;line-height:13px;padding:4px;overflow:hidden;text-overflow:ellipsis;color:#d4f0e0}
+.rev.pop{animation:rpop .5s cubic-bezier(.34,1.56,.64,1)}
+@keyframes rpop{0%{transform:scale(.75);opacity:0}60%{transform:scale(1.06)}100%{transform:scale(1);opacity:1}}
+.lkd{background:linear-gradient(180deg,#2d2050,#1e1438);border-color:#a78bfa!important;color:#c4b5fd;font-size:20px;animation:lglow 2s ease-in-out infinite;cursor:pointer}
+.lkd small{display:block;font-size:8.5px;color:#ddd6fe;margin-top:1px;font-weight:700}
+@keyframes lglow{0%,100%{box-shadow:0 0 5px rgba(167,139,250,.28)}50%{box-shadow:0 0 16px rgba(167,139,250,.6)}}
+.drafted td{border-color:rgba(255,255,255,.22)!important}
+.specialRow td{background:#5a3f08!important;border-color:var(--gold)!important}
+
+/* ── Bottom panel ── */
+.bottom{position:fixed;bottom:0;left:0;right:0;background:rgba(6,10,18,.98);border-top:3px solid var(--turf);padding:10px 14px calc(10px + env(safe-area-inset-bottom));z-index:10;backdrop-filter:blur(8px)}
+.bmsg{font-size:15px;font-weight:700;line-height:18px;max-height:38px;overflow:hidden;font-family:'Oswald',sans-serif;letter-spacing:.06em;text-transform:uppercase}
+.blog{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px;letter-spacing:.04em;text-transform:uppercase;font-family:'Oswald',sans-serif}
+
+/* ── Modal overlay ── */
+.overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.84);z-index:30;padding:16px;backdrop-filter:blur(5px)}
+.hidden{display:none!important}
+.box{width:min(480px,96vw);background:linear-gradient(180deg,#131f35,#0d1828);border:1px solid var(--line2);border-radius:20px;padding:20px;box-shadow:0 24px 80px rgba(0,0,0,.7)}
+.box h2{margin:0 0 10px;color:var(--gold);font-size:24px;font-weight:700;font-family:'Oswald',sans-serif;letter-spacing:.1em;text-transform:uppercase}
+.box p{font-size:14px;line-height:1.5;color:#cfe0f5}
+.acts{display:grid;gap:8px;margin-top:14px}
+.acts button{min-height:52px;font-size:16px;font-weight:800;border-radius:14px;border:1px solid;cursor:pointer;width:100%}
+.yes{background:linear-gradient(180deg,#1f9f56,#157a3e);border-color:#2fd67a;color:#fff}
+.no{background:linear-gradient(180deg,#5a1e2a,#3d1520);border-color:var(--red);color:var(--red)}
+.gold{background:linear-gradient(180deg,#7a5f10,#5a4008);border-color:var(--gold);color:var(--gold)}
+
+/* ── YOUR TURN popup ── */
+.ytOverlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.88);z-index:50;backdrop-filter:blur(6px)}
+.ytBox{text-align:center;padding:36px 28px;border-radius:22px;max-width:340px;width:92%;animation:ytPop .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes ytPop{0%{transform:scale(.5);opacity:0}100%{transform:scale(1);opacity:1}}
+.ytLabel{font-size:11px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;opacity:.7;margin-bottom:6px;font-family:'Oswald',sans-serif}
+.ytName{font-size:36px;font-weight:700;line-height:1.1;font-family:'Oswald',sans-serif;letter-spacing:.08em;text-transform:uppercase}
+.ytSub{font-size:12px;opacity:.55;margin-top:10px;font-family:'Oswald',sans-serif;letter-spacing:.12em;text-transform:uppercase}
+
+/* ── Draft celebration ── */
+.celOverlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.93);z-index:100;padding:16px}
+.celBox{text-align:center;padding:30px 22px;border-radius:22px;max-width:360px;width:92%;animation:celIn .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes celIn{0%{transform:scale(.5);opacity:0}100%{transform:scale(1);opacity:1}}
+.celWho{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;opacity:.8}
+.celVerb{font-size:10px;opacity:.55;letter-spacing:.1em;text-transform:uppercase;margin:5px 0}
+.celTeam{font-size:28px;font-weight:900;line-height:1.1;margin:10px 0}
+.celPts{font-size:12px;opacity:.55}
+.celTap{font-size:11px;opacity:.35;margin-top:14px}
+.advReveal{font-size:26px;color:var(--gold);font-weight:900;text-align:center;margin:12px 0}
+
+/* ── Admin panel ── */
+.adminPanel{position:fixed;left:8px;right:8px;bottom:88px;background:linear-gradient(180deg,#10192e,#0a1220);border:1px solid var(--gold);border-radius:16px;padding:14px;z-index:22;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+.adminGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.adminGrid button{min-height:46px;font-size:14px;font-weight:700;border-radius:10px;border:1px solid var(--line2);background:rgba(255,255,255,.05);color:var(--text);cursor:pointer}
+.adminGrid select{height:46px;font-size:16px;border:1px solid var(--line2);border-radius:10px;background:#0d1828;color:var(--text);padding:0 8px}
+
+/* ── Toast ── */
+#toast{position:fixed;bottom:110px;left:50%;transform:translateX(-50%);background:rgba(14,26,48,.97);border:1px solid var(--line2);border-radius:20px;padding:8px 18px;font-size:12px;font-weight:700;z-index:60;pointer-events:none;opacity:0;transition:opacity .2s;white-space:nowrap}
+#toast.show{opacity:1}
+
+/* ── Confetti ── */
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:99;display:none}
+
+@media(min-width:700px){
+  :root{--draftW:110px;--uniW:120px;--cellW:125px;--cellH:66px}
+  h1{font-size:17px}
+  .pc{min-width:100px}
+  .pp{font-size:21px}
+}
 </style>
 </head>
 <body>
+<canvas id="confetti"></canvas>
+<audio id="yourturn" src="yourturn.mp3" preload="auto"></audio>
+
 <div class="app">
-<header>
-<h1>NCAA DYNASTY DRAFT SHOW</h1>
-<div class="sub">TRUE LIVE • Firebase source of truth • no refresh sync</div>
-<div class="controls"><div class="idBox" id="identityBox">Loading identity...</div><button class="adminBtn" onclick="toggleAdmin()">Duce</button></div>
-</header>
-<div class="scorebar" id="scorebar"></div>
-<div class="timerBar"><div class="turnText" id="turnText"></div><div class="timer" id="timer">1:00</div></div>
-<div class="boardWrap"><table id="board"></table></div>
-<div class="bottomPanel"><div class="message" id="message">Loading live draft...</div><div class="log" id="log">Ready.</div></div>
+  <header id="header"></header>
+  <div class="sbar" id="sbar"></div>
+  <div class="tpbar"><div class="tpfill" id="tpf" style="width:100%"></div></div>
+  <div class="turnBar">
+    <div class="turnInfo">
+      <span class="turnLabel">Now Drafting</span>
+      <span class="turnName" id="turnName">—</span>
+      <span class="turnHint" id="turnHint"></span>
+    </div>
+    <div class="clockWrap">
+      <span class="clockLabel">Game Clock</span>
+      <span class="clock" id="clock">1:00</span>
+    </div>
+  </div>
+  <div class="boardWrap"><table id="board"></table></div>
+  <div class="bottom">
+    <div class="bmsg" id="msg">Welcome to the Dynasty Draft Show.</div>
+    <div class="blog" id="log">Loading...</div>
+  </div>
 </div>
-<div id="adminPanel" class="adminPanel hidden"><b>Duce Commissioner Controls</b><div class="adminGrid" style="margin-top:8px"><select id="adminPlayer"></select><button onclick="adminSetActive()">Set Active</button><button onclick="nextTurn()">Next Player</button><button onclick="undoLast()">Undo Last</button><button onclick="resetBoardConfirm()">Reset Board</button><button onclick="toggleAdmin()">Close</button></div></div>
-<div id="modal" class="modal hidden"><div class="box"><h2 id="modalTitle"></h2><p id="modalText"></p><div class="actions" id="modalActions"></div></div></div>
+
+<div id="adminPanel" class="adminPanel hidden">
+  <b style="color:var(--gold)">⚙ Commissioner Controls</b>
+  <div class="adminGrid">
+    <select id="adminPlayer"></select>
+    <button onclick="adminSetActive()">Set Active</button>
+    <button onclick="doNextTurn()">Next Turn</button>
+    <button onclick="undoLast()">↩ Undo</button>
+    <button onclick="resetBoardConfirm()" style="color:var(--red);border-color:var(--red)">Reset Board</button>
+    <button onclick="document.getElementById('adminPanel').classList.add('hidden')">Close</button>
+  </div>
+</div>
+
+<div id="modal" class="overlay hidden">
+  <div class="box">
+    <h2 id="modalTitle"></h2>
+    <p id="modalText"></p>
+    <div class="acts" id="modalActs"></div>
+  </div>
+</div>
+
+<div id="ytDiv" class="ytOverlay hidden">
+  <div class="ytBox" id="ytBox">
+    <div class="ytLabel">⚡ ON THE CLOCK</div>
+    <div class="ytName" id="ytName"></div>
+    <div class="ytSub">Tap to play</div>
+  </div>
+</div>
+
+<div id="celDiv" class="celOverlay hidden">
+  <div class="celBox" id="celBox">
+    <div class="celWho" id="celWho"></div>
+    <div class="celVerb">DRAFTED</div>
+    <div class="celTeam" id="celTeam"></div>
+    <div class="celPts" id="celPts"></div>
+    <div class="celTap">Tap anywhere to continue</div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<div id="bigRedOverlay" style="display:none;position:fixed;inset:0;z-index:20;pointer-events:none;align-items:center;justify-content:center;background:rgba(0,0,0,.15)">
+  <img src="bigred.webp" id="bigRedImg" style="width:90%;max-width:420px;height:auto;-webkit-mask-image:radial-gradient(ellipse 78% 88% at 50% 48%,black 55%,transparent 100%);mask-image:radial-gradient(ellipse 78% 88% at 50% 48%,black 55%,transparent 100%);animation:brIn .5s cubic-bezier(.34,1.56,.64,1)" />
+  <div style="position:absolute;bottom:120px;left:0;right:0;text-align:center;font-family:'Oswald',sans-serif;font-size:16px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,.9);animation:brIn .5s ease-out">TAP A TILE — PICK BLIND</div>
+</div>
+<style>
+@keyframes brIn{0%{transform:scale(.4) translateY(60%);opacity:0}60%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+@keyframes brOut{0%{transform:scale(1);opacity:1}100%{transform:scale(.4) translateY(60%);opacity:0}}
+.brLeave{animation:brOut .35s ease-in forwards!important}
+</style>
+
+<div id="wheelModal" style="display:none;position:fixed;inset:0;z-index:150;background:rgba(0,0,0,.92);flex-direction:column;align-items:center;justify-content:center;backdrop-filter:blur(6px)">
+  <div style="text-align:center;margin-bottom:16px">
+    <div style="font-family:'Oswald',sans-serif;font-size:11px;letter-spacing:.18em;color:#7aa3c8;text-transform:uppercase">Spin The Wheel</div>
+    <div id="wheelPlayer" style="font-family:'Oswald',sans-serif;font-size:28px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#ffcc45"></div>
+  </div>
+  <div style="position:relative;width:300px;height:300px">
+    <canvas id="wheelCanvas" width="300" height="300"></canvas>
+    <div style="position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:32px;line-height:1;filter:drop-shadow(0 2px 4px rgba(0,0,0,.8))">▼</div>
+  </div>
+  <button id="wheelSpinBtn" onclick="doSpin()" style="margin-top:22px;background:linear-gradient(180deg,#1a5c1a,#0f3d0f);border:2px solid #4ade80;color:#fff;font-family:'Oswald',sans-serif;font-size:18px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;padding:14px 40px;border-radius:10px;cursor:pointer">SPIN</button>
+  <div id="wheelResult" style="margin-top:16px;font-family:'Oswald',sans-serif;font-size:20px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;min-height:28px;text-align:center"></div>
+</div>
+
+<div id="draftVideo" style="display:none;position:fixed;inset:0;z-index:200;background:#000;flex-direction:column;align-items:center;justify-content:center">
+  <video id="draftVid" playsinline style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0"></video>
+  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:80px;pointer-events:none">
+    <div id="draftVidWho" style="font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;opacity:.85;text-shadow:0 2px 8px rgba(0,0,0,.8)"></div>
+    <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;opacity:.6;margin:6px 0;text-shadow:0 2px 8px rgba(0,0,0,.8)">DRAFTED</div>
+    <div id="draftVidTeam" style="font-size:38px;font-weight:900;line-height:1.1;text-shadow:0 3px 16px rgba(0,0,0,.9)"></div>
+  </div>
+  <button onclick="closeDraftVideo()" style="position:absolute;top:18px;right:18px;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:20px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;z-index:10">Skip</button>
+</div>
+
+<script>
+// ── Identity from URL (no dropdown) ──
+const PLAYER_IDS={hagen:"Hagen Sweazy",boone:"Boone Goldsmith",cody:"Cody Morris",duce:"Duce True",connor:"Connor Givhan",jiffy:"Jordan Walker (Jiffy)",jacob:"Jacob Nichols",zach:"Zach Harp"};
+const _p=new URLSearchParams(window.location.search);
+const MY_NAME=_p.get('player')?PLAYER_IDS[_p.get('player')]||null:null;
+const IS_ADMIN=_p.get('player')==='duce'&&_p.get('admin')==='true';
+
+// ── Team videos (add more as you get them) ──
+const TEAM_VIDEOS={
+  "UL Monroe":"vid-ulmonroe.mp4",
+  "UMASS":"vid-umass.mp4",
+  "North Dakota State":"vid-ndsu.mp4",
+  "Sam Houston":"vid-samhouston.mp4"
+};
+
+// ── Game data ──
+const TEAMS=[{"University":"Akron","Off. Rating":75,"Def. Rating":72,"Dynasty Point Budget (NIL)":605,"Pipeline Tier":"T3 & T1","Top Pipeline Region/State":"Ohio","Top Off. Skill Player":"WR (84)","Top Def. Skill Player":"MLB (82)","Avg. OL":67,"Avg. DL":68,"Avg. DB":66,"QB Archetype":"Field General","QB Power/Accuracy":"82 / 84","HB Archetype":"Elusive","Best HB Speed":91,"Best WR Speed":93,"Best WR Catching":84,"Number of Seniors":14},{"University":"Kennesaw State","Off. Rating":73,"Def. Rating":76,"Dynasty Point Budget (NIL)":515,"Pipeline Tier":"T2 & T1","Top Pipeline Region/State":"Georgia","Top Off. Skill Player":"HB (86)","Top Def. Skill Player":"EDGE (84)","Avg. OL":71,"Avg. DL":70,"Avg. DB":69,"QB Archetype":"Improviser","QB Power/Accuracy":"87 / 80","HB Archetype":"Power","Best HB Speed":89,"Best WR Speed":92,"Best WR Catching":82,"Number of Seniors":12},{"University":"Georgia State","Off. Rating":75,"Def. Rating":71,"Dynasty Point Budget (NIL)":680,"Pipeline Tier":"T2","Top Pipeline Region/State":"S. Carolina","Top Off. Skill Player":"WR (87)","Top Def. Skill Player":"CB (85)","Avg. OL":72,"Avg. DL":69,"Avg. DB":71,"QB Archetype":"Scrambler","QB Power/Accuracy":"89 / 78","HB Archetype":"Receiving","Best HB Speed":90,"Best WR Speed":95,"Best WR Catching":80,"Number of Seniors":15},{"University":"Old Dominion","Off. Rating":72,"Def. Rating":77,"Dynasty Point Budget (NIL)":705,"Pipeline Tier":"T4 & T2","Top Pipeline Region/State":"Tidewater","Top Off. Skill Player":"TE (85)","Top Def. Skill Player":"DT (84)","Avg. OL":74,"Avg. DL":72,"Avg. DB":70,"QB Archetype":"Field General","QB Power/Accuracy":"81 / 88","HB Archetype":"Power","Best HB Speed":87,"Best WR Speed":90,"Best WR Catching":86,"Number of Seniors":18},{"University":"South Alabama","Off. Rating":73,"Def. Rating":72,"Dynasty Point Budget (NIL)":570,"Pipeline Tier":"T3, T2, T1","Top Pipeline Region/State":"Alabama","Top Off. Skill Player":"WR (91)","Top Def. Skill Player":"EDGE (89)","Avg. OL":78,"Avg. DL":80,"Avg. DB":79,"QB Archetype":"Scrambler","QB Power/Accuracy":"92 / 82","HB Archetype":"Elusive","Best HB Speed":94,"Best WR Speed":96,"Best WR Catching":87,"Number of Seniors":11},{"University":"UL Monroe","Off. Rating":71,"Def. Rating":68,"Dynasty Point Budget (NIL)":660,"Pipeline Tier":"T2","Top Pipeline Region/State":"Texas","Top Off. Skill Player":"HB (87)","Top Def. Skill Player":"MLB (85)","Avg. OL":73,"Avg. DL":71,"Avg. DB":70,"QB Archetype":"Improviser","QB Power/Accuracy":"86 / 82","HB Archetype":"Elusive","Best HB Speed":92,"Best WR Speed":91,"Best WR Catching":84,"Number of Seniors":16},{"University":"Ball State","Off. Rating":72,"Def. Rating":73,"Dynasty Point Budget (NIL)":900,"Pipeline Tier":"T3 & T2","Top Pipeline Region/State":"Indiana","Top Off. Skill Player":"WR (83)","Top Def. Skill Player":"S (82)","Avg. OL":66,"Avg. DL":67,"Avg. DB":65,"QB Archetype":"Field General","QB Power/Accuracy":"79 / 83","HB Archetype":"Power","Best HB Speed":88,"Best WR Speed":90,"Best WR Catching":82,"Number of Seniors":20},{"University":"Buffalo","Off. Rating":71,"Def. Rating":73,"Dynasty Point Budget (NIL)":870,"Pipeline Tier":"T2","Top Pipeline Region/State":"N.Y.","Top Off. Skill Player":"WR (92)","Top Def. Skill Player":"CB (90)","Avg. OL":80,"Avg. DL":79,"Avg. DB":81,"QB Archetype":"Strong Arm","QB Power/Accuracy":"94 / 84","HB Archetype":"Elusive","Best HB Speed":95,"Best WR Speed":97,"Best WR Catching":88,"Number of Seniors":10},{"University":"Kent State","Off. Rating":73,"Def. Rating":70,"Dynasty Point Budget (NIL)":605,"Pipeline Tier":"T2","Top Pipeline Region/State":"Ohio","Top Off. Skill Player":"HB (84)","Top Def. Skill Player":"MLB (83)","Avg. OL":68,"Avg. DL":68,"Avg. DB":67,"QB Archetype":"Improviser","QB Power/Accuracy":"84 / 80","HB Archetype":"Receiving","Best HB Speed":90,"Best WR Speed":91,"Best WR Catching":83,"Number of Seniors":17},{"University":"UMASS","Off. Rating":71,"Def. Rating":72,"Dynasty Point Budget (NIL)":980,"Pipeline Tier":"T2","Top Pipeline Region/State":"Tidewater","Top Off. Skill Player":"TE (86)","Top Def. Skill Player":"EDGE (86)","Avg. OL":74,"Avg. DL":74,"Avg. DB":74,"QB Archetype":"Field General","QB Power/Accuracy":"83 / 87","HB Archetype":"Power","Best HB Speed":88,"Best WR Speed":91,"Best WR Catching":86,"Number of Seniors":13},{"University":"Sacramento State","Off. Rating":73,"Def. Rating":72,"Dynasty Point Budget (NIL)":515,"Pipeline Tier":"T2","Top Pipeline Region/State":"California","Top Off. Skill Player":"WR (85)","Top Def. Skill Player":"CB (84)","Avg. OL":67,"Avg. DL":66,"Avg. DB":66,"QB Archetype":"Scrambler","QB Power/Accuracy":"86 / 78","HB Archetype":"Elusive","Best HB Speed":92,"Best WR Speed":94,"Best WR Catching":81,"Number of Seniors":9},{"University":"Delaware","Off. Rating":77,"Def. Rating":73,"Dynasty Point Budget (NIL)":515,"Pipeline Tier":"T1","Top Pipeline Region/State":"N.Y.","Top Off. Skill Player":"WR (90)","Top Def. Skill Player":"EDGE (87)","Avg. OL":76,"Avg. DL":75,"Avg. DB":73,"QB Archetype":"Strong Arm","QB Power/Accuracy":"93 / 81","HB Archetype":"Receiving","Best HB Speed":91,"Best WR Speed":95,"Best WR Catching":85,"Number of Seniors":8},{"University":"FIU","Off. Rating":73,"Def. Rating":75,"Dynasty Point Budget (NIL)":625,"Pipeline Tier":"T3 & T1","Top Pipeline Region/State":"Florida","Top Off. Skill Player":"HB (89)","Top Def. Skill Player":"S (88)","Avg. OL":75,"Avg. DL":76,"Avg. DB":78,"QB Archetype":"Improviser","QB Power/Accuracy":"90 / 84","HB Archetype":"Elusive","Best HB Speed":94,"Best WR Speed":95,"Best WR Catching":84,"Number of Seniors":12},{"University":"Rice","Off. Rating":72,"Def. Rating":73,"Dynasty Point Budget (NIL)":580,"Pipeline Tier":"T2","Top Pipeline Region/State":"Texas","Top Off. Skill Player":"WR (85)","Top Def. Skill Player":"EDGE (84)","Avg. OL":70,"Avg. DL":71,"Avg. DB":70,"QB Archetype":"Improviser","QB Power/Accuracy":"83 / 79","HB Archetype":"Receiving","Best HB Speed":88,"Best WR Speed":90,"Best WR Catching":83,"Number of Seniors":13},{"University":"Sam Houston","Off. Rating":72,"Def. Rating":71,"Dynasty Point Budget (NIL)":515,"Pipeline Tier":"T2 & T1","Top Pipeline Region/State":"Texas","Top Off. Skill Player":"WR (89)","Top Def. Skill Player":"CB (86)","Avg. OL":74,"Avg. DL":74,"Avg. DB":73,"QB Archetype":"Improviser","QB Power/Accuracy":"88 / 83","HB Archetype":"Receiving","Best HB Speed":91,"Best WR Speed":94,"Best WR Catching":85,"Number of Seniors":15},{"University":"New Mexico State","Off. Rating":71,"Def. Rating":76,"Dynasty Point Budget (NIL)":790,"Pipeline Tier":"T2","Top Pipeline Region/State":"Arizona","Top Off. Skill Player":"WR (88)","Top Def. Skill Player":"EDGE (88)","Avg. OL":75,"Avg. DL":78,"Avg. DB":77,"QB Archetype":"Strong Arm","QB Power/Accuracy":"95 / 80","HB Archetype":"Elusive","Best HB Speed":93,"Best WR Speed":96,"Best WR Catching":84,"Number of Seniors":11},{"University":"Missouri State","Off. Rating":73,"Def. Rating":72,"Dynasty Point Budget (NIL)":515,"Pipeline Tier":"T1","Top Pipeline Region/State":"Texas","Top Off. Skill Player":"HB (86)","Top Def. Skill Player":"DT (84)","Avg. OL":72,"Avg. DL":70,"Avg. DB":69,"QB Archetype":"Field General","QB Power/Accuracy":"82 / 86","HB Archetype":"Power","Best HB Speed":89,"Best WR Speed":90,"Best WR Catching":85,"Number of Seniors":19}];
+const COLS=["University","Off. Rating","Def. Rating","Dynasty Point Budget (NIL)","Pipeline Tier","Top Pipeline Region/State","Top Off. Skill Player","Top Def. Skill Player","Avg. OL","Avg. DL","Avg. DB","QB Archetype","QB Power/Accuracy","HB Archetype","Best HB Speed","Best WR Speed","Best WR Catching","Number of Seniors"];
+const COSTS={"University":null,"Off. Rating":40,"Def. Rating":40,"Dynasty Point Budget (NIL)":125,"Pipeline Tier":100,"Top Pipeline Region/State":100,"Top Off. Skill Player":75,"Top Def. Skill Player":75,"Avg. OL":50,"Avg. DL":50,"Avg. DB":50,"QB Archetype":50,"QB Power/Accuracy":75,"HB Archetype":50,"Best HB Speed":75,"Best WR Speed":75,"Best WR Catching":75,"Number of Seniors":40};
+const PLAYERS=["Hagen Sweazy","Boone Goldsmith","Cody Morris","Duce True","Connor Givhan","Jordan Walker (Jiffy)","Jacob Nichols","Zach Harp"];
+const ADV={"Connor Givhan":"Tulsa","Jordan Walker (Jiffy)":"Memphis","Jacob Nichols":"Jax State","Zach Harp":"Tulane"};
+const COLORS={"Hagen Sweazy":"#2F80ED","Boone Goldsmith":"#EB5757","Cody Morris":"#F2994A","Duce True":"#27AE60","Connor Givhan":"#9B51E0","Jordan Walker (Jiffy)":"#F2C94C","Jacob Nichols":"#56CCF2","Zach Harp":"#BB6BD9"};
+const EVENT_BAG=[
+  ...Array(25).fill("Choose Player Lose 50 Dynasty Points"),
+  ...Array(2).fill("Choose Player Lose 150 Dynasty Points"),
+  ...Array(8).fill("-100 Dynasty Points"),
+  ...Array(8).fill("+100 Dynasty Points"),
+  ...Array(7).fill("Choose Player Steal 75 Dynasty Points"),
+  ...Array(6).fill("All Players Lose 50 Dynasty Points"),
+  ...Array(5).fill("Spin The Wheel"),
+  ...Array(3).fill("Big Red"),
+  ...Array(1).fill("Must Draft Now"),
+  ...Array(2).fill("Special Team Offer"),
+];
+const SPECIAL_TEAM={"University":"North Dakota State","Off. Rating":"SPECIAL","Def. Rating":"SPECIAL","Dynasty Point Budget (NIL)":"SPECIAL","Pipeline Tier":"SPECIAL","Top Pipeline Region/State":"Dakotas","Top Off. Skill Player":"SPECIAL","Top Def. Skill Player":"SPECIAL","Avg. OL":"SPECIAL","Avg. DL":"SPECIAL","Avg. DB":"SPECIAL","QB Archetype":"SPECIAL","QB Power/Accuracy":"SPECIAL","HB Archetype":"SPECIAL","Best HB Speed":"SPECIAL","Best WR Speed":"SPECIAL","Best WR Catching":"SPECIAL","Number of Seniors":"SPECIAL"};
+
+// ── Sound engine ──
+const SFX=(()=>{
+  let ctx;
+  function gc(){if(!ctx)ctx=new(window.AudioContext||window.webkitAudioContext)();if(ctx.state==='suspended')ctx.resume();return ctx}
+  function tone(f,d,t,v,dl){try{const c=gc(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type=t||'sine';o.frequency.value=f;const ts=c.currentTime+(dl||0);g.gain.setValueAtTime(v||.2,ts);g.gain.exponentialRampToValueAtTime(.001,ts+d);o.start(ts);o.stop(ts+d+.02)}catch(e){}}
+  return{
+    reveal(){tone(523,.08,'triangle',.18);tone(659,.12,'triangle',.15,.07);tone(784,.2,'triangle',.12,.14)},
+    event(){tone(180,.4,'sawtooth',.28);tone(140,.6,'sawtooth',.22,.3)},
+    draft(){[523,659,784,1047,1319].forEach((f,i)=>tone(f,.25,'triangle',.3,i*.09))},
+    lock(){tone(330,.15,'square',.14);tone(247,.35,'square',.1,.12)},
+    tick(){tone(1200,.04,'sine',.12)},
+    tickUrgent(){tone(1400,.04,'sine',.2);tone(700,.08,'sine',.1,.05)},
+    buzz(){[180,140,100].forEach((f,i)=>tone(f,.35,'sawtooth',.35,i*.12))},
+    warn(){tone(880,.04,'square',.07)},
+    penalty(){tone(220,.2,'sawtooth',.22);tone(180,.3,'sawtooth',.18,.18)},
+    yourTurn(){[392,523,659,784].forEach((f,i)=>tone(f,.2,'triangle',.25,i*.08))}
+  }
+})();
+
+// ── Confetti ──
+function launchConfetti(color){
+  const cv=document.getElementById('confetti');cv.style.display='block';
+  cv.width=window.innerWidth;cv.height=window.innerHeight;
+  const ctx=cv.getContext('2d'),pal=[color,'#4ade80','#fff','#56CCF2'];
+  const ps=Array.from({length:200},()=>({x:Math.random()*cv.width,y:-20-Math.random()*100,w:Math.random()*10+4,h:Math.random()*6+3,color:pal[Math.floor(Math.random()*pal.length)],vx:(Math.random()-.5)*5,vy:Math.random()*4+3,ang:Math.random()*Math.PI*2,va:(Math.random()-.5)*.16}));
+  let st=Date.now(),raf;
+  function draw(){ctx.clearRect(0,0,cv.width,cv.height);let alive=false;ps.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.ang+=p.va;p.vy+=.06;if(p.y<cv.height+15)alive=true;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.ang);ctx.fillStyle=p.color+'cc';ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore()});if(alive&&Date.now()-st<5000)raf=requestAnimationFrame(draw);else{cv.style.display='none';cancelAnimationFrame(raf)}}
+  draw();
+}
+
+// ── State ──
+let state,modalTimer=null,prevPoints={},freshReveal=new Set(),lastTurnPlayer=null;
+
+function freshState(){
+  const points={},eventMap={},used=new Set(),hiddenLocks={},draftedTeams={};
+  PLAYERS.forEach(p=>points[p]=500);
+  while(used.size<EVENT_BAG.length){let r=Math.floor(Math.random()*TEAMS.length),c=1+Math.floor(Math.random()*(COLS.length-1));used.add(r+'-'+c)}
+  [...used].forEach((id,i)=>eventMap[id]=EVENT_BAG[i]);
+  let hi=0,hv=-1;TEAMS.forEach((t,i)=>{if(t["Dynasty Point Budget (NIL)"]>hv){hv=t["Dynasty Point Budget (NIL)"];hi=i}});
+  hiddenLocks[hi+'-'+COLS.indexOf("Dynasty Point Budget (NIL)")]=true;
+  const lockedRows=new Set(Object.keys(hiddenLocks).map(id=>id.split('-')[0]));
+  while(Object.keys(hiddenLocks).length<13){
+    const r=Math.floor(Math.random()*TEAMS.length);
+    if(lockedRows.has(String(r)))continue;
+    const c=1+Math.floor(Math.random()*(COLS.length-1));
+    hiddenLocks[r+'-'+c]=true;lockedRows.add(String(r));
+  }
+  return{revealed:{},drafted:{},draftedBy:{},draftedTeams,hiddenLocks,foundLocks:{},eventMap,log:[],points,active:0,activePlayers:[...PLAYERS],history:[],specialAvailable:true,specialAdded:false,turnEndsAt:Date.now()+60000,mustDraft:{},forceDraftNow:false,freeReveal:null,bigRedActive:false};
+}
+
+function load(){try{state=JSON.parse(localStorage.getItem('ncaaDraftV2'))||freshState()}catch(e){state=freshState()}prevPoints={...state.points}}
+function save(){
+  const v=JSON.stringify(state),t=Date.now();
+  localStorage.setItem('ncaaDraftV2',v);
+  if(window._fbRef){window._lastSaveT=t;window._fbRef.set({v,t}).catch(()=>{})}
+}
+function snapshot(){state.history.push(JSON.stringify({...state,history:[]}));state.history=state.history.slice(-20)}
+function cp(){return state.activePlayers[state.active]||null}
+function canAct(){return IS_ADMIN||(MY_NAME!==null&&MY_NAME===cp())}
+function setMsg(t){document.getElementById('msg').textContent=t}
+function addLog(t){state.log.unshift(t);state.log=state.log.slice(0,50);document.getElementById('log').textContent=state.log[0]||'Ready.'}
+function showToast(t,d=2400){const el=document.getElementById('toast');el.textContent=t;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),d)}
+
+// ── Build header (once) ──
+function buildHeader(){
+  const h=document.getElementById('header');
+  let html=`<div class="hrow"><h1>NCAA Dynasty Draft Show</h1><div class="connDot" id="connDot"></div></div>`;
+  if(MY_NAME){
+    html+=`<div class="identity">Playing as: <span class="idName" style="color:${COLORS[MY_NAME]}">${MY_NAME}</span>`;
+    if(IS_ADMIN)html+=` <span class="badge">⚙ Commissioner</span>`;
+    html+=`</div>`;
+    if(IS_ADMIN)html+=`<button class="adminBtn" onclick="toggleAdmin()">⚙ Admin Panel</button>`;
+  }else{
+    html+=`<div class="identity"><span class="badge">Spectator</span></div>`;
+  }
+  h.innerHTML=html;
+  if(IS_ADMIN){const a=document.getElementById('adminPlayer');PLAYERS.forEach(p=>a.add(new Option(p,p)))}
+}
+
+function toggleAdmin(){document.getElementById('adminPanel').classList.toggle('hidden')}
+
+// ── YOUR TURN popup ──
+function checkYourTurn(){
+  const now=cp();
+  if(MY_NAME&&now===MY_NAME&&lastTurnPlayer!==MY_NAME){
+    if(state.mustDraft[MY_NAME]){
+      showYourTurn();
+      setTimeout(()=>showModal('🚨 MUST DRAFT THIS TURN','You lost too many points and cannot afford any tiles. You must draft a team from the board right now.',[['Got it — pick my team','yes',()=>{closeModal();render()}]]),1200);
+    } else if(state.forceDraftNow){
+      showYourTurn();
+    } else {
+      showYourTurn();
+    }
+  }
+  lastTurnPlayer=now;
+}
+function showYourTurn(){
+  if(navigator.vibrate)navigator.vibrate([200,100,200]);
+  const yt=document.getElementById('yourturn');
+  if(yt){yt.currentTime=0;yt.volume=0.9;yt.play().catch(()=>{})}else SFX.yourTurn();
+  const div=document.getElementById('ytDiv'),box=document.getElementById('ytBox');
+  document.getElementById('ytName').textContent=MY_NAME;
+  document.getElementById('ytName').style.color=COLORS[MY_NAME];
+  box.style.border=`2px solid ${COLORS[MY_NAME]}`;
+  box.style.background=`linear-gradient(180deg,${COLORS[MY_NAME]}22,#0d1828)`;
+  div.classList.remove('hidden');
+  div.onclick=()=>div.classList.add('hidden');
+  setTimeout(()=>div.classList.add('hidden'),4000);
+}
+
+// ── Render ──
+function renderScores(){
+  const bar=document.getElementById('sbar');bar.innerHTML='';
+  PLAYERS.forEach(p=>{
+    const drafted=state.draftedTeams[p],isAct=p===cp();
+    const pts=state.points[p],prev=prevPoints[p]??pts,chg=pts!==prev;
+    const c=document.createElement('div');
+    c.className='pc'+(isAct?' act':'');
+    c.style.borderColor=COLORS[p];
+    if(drafted)c.style.background=`linear-gradient(180deg,${COLORS[p]}33,#0d1e35)`;
+    c.innerHTML=`<div class="pn">${p.split(' ')[0]}</div>`+
+      (drafted?`<div class="pt" style="color:${COLORS[p]}">${drafted}</div>`
+        :`<div class="pp${chg?(pts>prev?' up':' dn'):''}">${pts}</div>`)+
+      '';
+    bar.appendChild(c);
+  });
+  const p=cp();
+  document.getElementById('turnName').textContent=p||'Draft Complete!';
+  document.getElementById('turnName').style.color=p?COLORS[p]:'var(--gold)';
+  document.getElementById('turnHint').textContent=p?(canAct()?'— YOUR TURN':'— view only'):'';
+  prevPoints={...state.points};
+}
+
+function render(){
+  renderScores();
+  const table=document.getElementById('board');table.innerHTML='';
+  const allTeams=state.specialAdded?[...TEAMS,SPECIAL_TEAM]:TEAMS;
+  const head=document.createElement('tr');
+  const dh=document.createElement('th');dh.textContent='Draft';dh.className='dh';head.appendChild(dh);
+  COLS.forEach((c,i)=>{const th=document.createElement('th');th.textContent=c;if(i===0)th.className='uh';head.appendChild(th)});
+  table.appendChild(head);
+  allTeams.forEach((team,r)=>{
+    const tr=document.createElement('tr');
+    if(state.drafted[r])tr.className='drafted';
+    if(r>=TEAMS.length)tr.className+=' specialRow';
+    if(state.draftedBy[r])tr.style.background=COLORS[state.draftedBy[r]]+'1a';
+    const dtd=document.createElement('td');dtd.className='dc';
+    const btn=document.createElement('button');btn.className='draftBtn';
+    btn.textContent=state.drafted[r]?'DRAFTED':'Draft Team';
+    const forceMe=(state.forceDraftNow||state.mustDraft[cp()])&&canAct()&&!state.drafted[r];
+    btn.className='draftBtn'+(forceMe?' must':'');
+    if(forceMe)btn.textContent='DRAFT NOW';
+    btn.disabled=!!state.drafted[r]||!canAct()||!cp();
+    btn.onclick=()=>confirmDraft(r);dtd.appendChild(btn);tr.appendChild(dtd);
+    COLS.forEach((col,c)=>{
+      const td=document.createElement('td'),id=r+'-'+c,isU=c===0;
+      const revealed=state.revealed[id]||state.drafted[r]||r>=TEAMS.length;
+      if(isU)td.classList.add('uc');
+      if(state.draftedBy[r])td.style.background=COLORS[state.draftedBy[r]]+'28';
+      if(state.foundLocks[id]&&!revealed){
+        td.className+=' lkd';td.innerHTML='🔒<small>UNLOCK<br>100 PTS</small>';td.onclick=()=>unlockTile(r,c);
+      }else if(isU&&!revealed){
+        td.className+=' unic';td.innerHTML='<b>LOCKED</b>';
+      }else if(revealed){
+        td.className+=' rev';if(freshReveal.has(id))td.classList.add('pop');td.textContent=team[col];
+      }else{
+        const cost=COSTS[col];td.className+=' tile';
+        if(!canAct()||state.points[cp()]<cost)td.className+=' dis';
+        td.innerHTML=`<span>${cost}</span><small>PTS</small>`;td.onclick=()=>tileClick(r,c);
+      }
+      tr.appendChild(td);
+    });
+    table.appendChild(tr);
+  });
+  freshReveal.clear();
+}
+
+// ── Actions ──
+function spend(p,cost,force=false){if(force){state.points[p]=Math.max(0,state.points[p]-cost);return true}if(state.points[p]<cost)return false;state.points[p]-=cost;return true}
+function anyAffordable(p){return Object.values(COSTS).some(v=>v&&state.points[p]>=v)}
+
+function tileClick(r,c){
+  if(!canAct())return setMsg('Not your turn.');
+  const p=cp(),id=r+'-'+c,col=COLS[c],cost=COSTS[col];
+  if(c===0||state.drafted[r])return;
+  if(state.mustDraft[p]||state.forceDraftNow)return setMsg('You must draft a team — pick from the board!');
+  if(state.points[p]<cost)return setMsg('Not enough points for this tile.');
+  snapshot();
+  if(state.hiddenLocks[id]){
+    SFX.lock();delete state.hiddenLocks[id];state.foundLocks[id]=true;
+    addLog(p+' found a locked tile!');setMsg('🔒 Locked tile! Turn ends.');
+    endTurn();render();return;
+  }
+  const free=state.freeReveal===p;if(free)state.freeReveal=null;else spend(p,cost);
+  SFX.reveal();freshReveal.add(id);
+  if(state.bigRedActive){state.bigRedActive=false;dismissBigRed(()=>{revealTile(r,c,true);endTurn()});}
+  else{revealTile(r,c,true);endTurn();}
+}
+
+function unlockTile(r,c){
+  if(!canAct())return setMsg('Not your turn.');
+  const p=cp(),id=r+'-'+c;
+  if(state.points[p]<100)return setMsg('Need 100 points to unlock.');
+  snapshot();SFX.reveal();spend(p,100);delete state.foundLocks[id];
+  addLog(p+' unlocked tile for 100 pts.');freshReveal.add(id);revealTile(r,c,true);endTurn();
+}
+
+function revealTile(r,c,trigger){
+  const id=r+'-'+c;state.revealed[id]=true;
+  addLog(`${cp()} revealed Team ${r+1} — ${COLS[c]}: ${TEAMS[r]?.[COLS[c]]??'?'}`);
+  if(trigger&&state.eventMap[id])handleEvent(state.eventMap[id]);
+  save();render();
+}
+
+function handleEvent(ev){
+  addLog('EVENT: '+ev);SFX.event();
+  if(ev==='Choose Player Lose 50 Dynasty Points'||ev==='Choose Player Lose 150 Dynasty Points'){
+    const amt=ev.includes('150')?150:50;
+    chooseTarget(`Choose a player to lose ${amt} pts.`,
+      t=>{snapshot();spend(t,amt,true);if(!anyAffordable(t))state.mustDraft[t]=true;addLog(t+` lost ${amt} pts.`+(state.mustDraft[t]?' Must draft!':''));closeModal();render()},
+      ()=>{const arr=state.activePlayers.filter(x=>x!==cp());const t=arr[Math.floor(Math.random()*arr.length)]||cp();spend(t,amt,true);if(!anyAffordable(t))state.mustDraft[t]=true;addLog(`Auto: ${t} lost ${amt} pts.`+(state.mustDraft[t]?' Must draft!':''));closeModal();render()});
+  }
+  if(ev==='-100 Dynasty Points'){SFX.penalty();const _p=cp();spend(_p,100,true);if(!anyAffordable(_p))state.mustDraft[_p]=true;showInfo('⚡ EVENT',`-100 Dynasty Points for ${_p}!${state.mustDraft[_p]?' Must draft next turn.':''}`);}
+  if(ev==='+100 Dynasty Points'){state.points[cp()]+=100;showInfo('💰 BONUS!',`+100 Dynasty Points for ${cp()}!`);}
+  if(ev==='All Players Lose 50 Dynasty Points'){
+    SFX.event();
+    state.activePlayers.forEach(p=>{spend(p,50,true);if(!anyAffordable(p))state.mustDraft[p]=true;});
+    showInfo('💥 ALL PLAYERS LOSE 50',`Everyone loses 50 Dynasty Points!`);
+    addLog('ALL players lost 50 pts!');
+  }
+  if(ev==='Choose Player Steal 75 Dynasty Points'){
+    SFX.event();
+    chooseTarget(`Steal 75 pts from a player.`,
+      t=>{snapshot();const gained=Math.min(75,state.points[t]);spend(t,75,true);state.points[cp()]+=gained;if(!anyAffordable(t))state.mustDraft[t]=true;addLog(`${cp()} stole ${gained} pts from ${t}.`+(state.mustDraft[t]?' Must draft!':''));closeModal();render();},
+      ()=>{const arr=state.activePlayers.filter(x=>x!==cp());const t=arr[Math.floor(Math.random()*arr.length)]||cp();const gained=Math.min(75,state.points[t]);spend(t,75,true);state.points[cp()]+=gained;if(!anyAffordable(t))state.mustDraft[t]=true;addLog(`Auto-steal: ${cp()} took ${gained} from ${t}.`);closeModal();render();});
+  }
+  if(ev==='Big Red'){showBigRed();return;}
+  if(ev==='Spin The Wheel'){showWheelModal(cp());return;}
+  if(ev==='Must Draft Now'){
+    state.forceDraftNow=true;save();
+    showModal('🚨 MUST DRAFT NOW',`${cp()} must immediately draft a team from the board. No reveals. Pick your team now.`,
+      [['Got it — pick my team','yes',()=>{closeModal();setMsg('MUST DRAFT NOW — tap any Draft Team button!');render()}]]);
+  }
+  if(ev==='Special Team Offer')specialOffer();
+}
+
+function chooseTarget(prompt,cb,to){
+  showTimed('⚡ CHOOSE TARGET',prompt,state.activePlayers.filter(p=>p!==cp()).map(p=>[p,'gold',()=>cb(p)]),to);
+}
+function mustDraftNow(){
+  showTimed('🚨 MUST DRAFT NOW','You must draft a team immediately — no passing.',
+    TEAMS.map((t,i)=>state.drafted[i]?null:[t.University,'yes',()=>{closeModal();snapshot();draftTeam(i)}]).filter(Boolean),
+    ()=>{const av=TEAMS.map((_,i)=>i).filter(i=>!state.drafted[i]);if(av.length){snapshot();draftTeam(av[Math.floor(Math.random()*av.length)])}});
+}
+function specialOffer(){
+  if(!state.specialAvailable){
+    showInfo('SPECIAL TEAM','SPECIAL TEAM ALREADY CLAIMED.');return;
+  }
+  showTimed('⭐ SPECIAL TEAM OFFER','A special team has entered the draft. Would you like to draft this team?',
+    [['Draft Special Team','gold',()=>{closeModal();snapshot();draftSpecial()}],
+     ['Pass','no',()=>{state.specialAvailable=false;addLog('Special team offer passed.');closeModal();save();render()}]],
+    ()=>{state.specialAvailable=false;addLog('Special team auto-passed.');closeModal();save();render()});
+}
+
+function confirmDraft(r){
+  if(!canAct())return setMsg('Not your turn.');
+  const p=cp();
+  if(ADV[p]&&r<TEAMS.length)
+    showModal('ARE YOU SURE?','You have a secret Huge Advantage Team available. Take it instead?',
+      [['Draft This Team','yes',()=>{closeModal();snapshot();draftTeam(r)}],
+       ['Take Advantage Team ⭐','gold',()=>{closeModal();snapshot();draftHugeAdv()}],
+       ['Cancel','no',closeModal]]);
+  else
+    showModal('CONFIRM DRAFT',`Draft this team for ${p}?`,
+      [['Draft Team','yes',()=>{closeModal();snapshot();draftTeam(r)}],['Cancel','no',closeModal]]);
+}
+
+function draftTeam(r){
+  const p=cp();
+  for(let c=0;c<COLS.length;c++)state.revealed[r+'-'+c]=true;
+  state.drafted[r]=true;state.draftedBy[r]=p;
+  const name=r<TEAMS.length?TEAMS[r].University:SPECIAL_TEAM.University;
+  state.draftedTeams[p]=name;addLog(`${p} drafted ${name}!`);
+  removePlayer(p);save();showCelebration(p,name,endTurn);
+}
+
+function draftHugeAdv(){
+  const p=cp(),team=ADV[p];
+  state.draftedTeams[p]=team;addLog(`${p} CHOSE HUGE ADVANTAGE: ${team}`);
+  removePlayer(p);save();showCelebration(p,team+' ⭐',endTurn);
+}
+
+function draftSpecial(){
+  const p=cp();
+  state.specialAvailable=false;state.specialAdded=true;
+  const r=TEAMS.length;
+  for(let c=0;c<COLS.length;c++)state.revealed[r+'-'+c]=true;
+  state.drafted[r]=true;state.draftedBy[r]=p;state.draftedTeams[p]='North Dakota State';
+  addLog(`${p} drafted North Dakota State!`);removePlayer(p);save();showCelebration(p,'North Dakota State',endTurn);
+}
+
+function removePlayer(p){
+  const i=state.activePlayers.indexOf(p);
+  if(i>=0){state.activePlayers.splice(i,1);if(state.active>=state.activePlayers.length)state.active=0}
+  delete state.mustDraft[p];
+  state.forceDraftNow=false;
+  state.turnEndsAt=Date.now()+60000;
+}
+
+function showCelebration(player,team,onDone){
+  SFX.draft();launchConfetti(COLORS[player]);
+  if(TEAM_VIDEOS[team]){
+    broadcastDraftVideo(player,team,onDone);
+  }else{
+    const div=document.getElementById('celDiv'),box=document.getElementById('celBox');
+    document.getElementById('celWho').textContent=player;document.getElementById('celWho').style.color=COLORS[player];
+    document.getElementById('celTeam').textContent=team;document.getElementById('celTeam').style.color=COLORS[player];
+    document.getElementById('celPts').textContent=state.points[player]+' pts remaining';
+    box.style.border=`2px solid ${COLORS[player]}`;box.style.background=`linear-gradient(180deg,${COLORS[player]}22,#0d1828)`;
+    div.classList.remove('hidden');
+    const dismiss=()=>{div.classList.add('hidden');if(onDone)onDone();render()};
+    div.onclick=dismiss;setTimeout(dismiss,4000);
+  }
+}
+
+function endTurn(){
+  if(state.activePlayers.length){
+    state.active=(state.active+1)%state.activePlayers.length;
+    state.turnEndsAt=Date.now()+60000;
+    const p=cp();
+    if(p&&!anyAffordable(p)){
+      state.mustDraft[p]=true;
+      setMsg(p+' has no affordable tiles — must draft!');
+      showToast(p.split(' ')[0]+' must draft!');
+    }
+  }
+  save();checkYourTurn();render();
+}
+
+function timeoutTurn(){
+  const p=cp();if(!p)return;snapshot();
+  if(state.forceDraftNow){const av=TEAMS.map((_,i)=>i).filter(i=>!state.drafted[i]);if(av.length){draftTeam(av[Math.floor(Math.random()*av.length)]);return}}
+  let cand=[];
+  TEAMS.forEach((_,r)=>{if(!state.drafted[r])COLS.forEach((col,c)=>{const id=r+'-'+c;if(c>0&&!state.revealed[id]&&!state.foundLocks[id])cand.push([r,c])})});
+  if(!cand.length)return endTurn();
+  const[r,c]=cand[Math.floor(Math.random()*cand.length)],id=r+'-'+c;
+  if(state.hiddenLocks[id]){delete state.hiddenLocks[id];state.foundLocks[id]=true;addLog('Timer expired: '+p+' found a lock.');state.mustDraft[p]=true;endTurn();return}
+  SFX.reveal();spend(p,COSTS[COLS[c]],true);freshReveal.add(id);
+  addLog('Timer expired: '+p+' lost '+COSTS[COLS[c]]+' pts on random tile.');
+  state.mustDraft[p]=true;
+  revealTile(r,c,true);endTurn();
+}
+
+// ── Modals ──
+function showModal(title,text,buttons){
+  clearEventTimer();
+  document.getElementById('modalTitle').textContent=title;
+  document.getElementById('modalText').innerHTML=text;
+  const a=document.getElementById('modalActs');a.innerHTML='';
+  buttons.forEach(([l,cls,fn])=>{const b=document.createElement('button');b.textContent=l;b.className=cls;b.onclick=fn;a.appendChild(b)});
+  document.getElementById('modal').classList.remove('hidden');
+}
+function showTimed(title,text,buttons,to){
+  let left=25;
+  showModal(title,text+`<br><br><b id="etxt" style="color:var(--gold)">${left}s remaining</b>`,buttons);
+  modalTimer=setInterval(()=>{left--;const e=document.getElementById('etxt');if(e)e.textContent=left+'s remaining';if(left<=0){clearEventTimer();to()}},1000);
+}
+function clearEventTimer(){if(modalTimer){clearInterval(modalTimer);modalTimer=null}}
+function closeModal(){clearEventTimer();document.getElementById('modal').classList.add('hidden')}
+function showInfo(t,x){showModal(t,x,[['OK','yes',closeModal]])}
+
+// ── Admin ──
+function adminSetActive(){
+  const p=document.getElementById('adminPlayer').value,i=state.activePlayers.indexOf(p);
+  if(i>=0){snapshot();state.active=i;state.turnEndsAt=Date.now()+60000;save();render()}
+}
+function doNextTurn(){snapshot();endTurn()}
+function undoLast(){
+  if(!state.history.length)return setMsg('Nothing to undo.');
+  const h=state.history.pop(),old=state.history;
+  state=JSON.parse(h);state.history=old;prevPoints={...state.points};save();render();showToast('↩ Undo applied');
+}
+function resetBoardConfirm(){
+  if(confirm('Reset the full board? This cannot be undone.')){
+    state=freshState();prevPoints={...state.points};save();render();
+    if(window._fbVideoRef)window._fbVideoRef.remove().catch(()=>{});
+  }
+}
+
+// ── Timer ──
+function updateTimer(){
+  const p=cp(),el=document.getElementById('clock'),bar=document.getElementById('tpf');
+  if(!p){el.textContent='DONE';el.className='clock';if(bar)bar.style.width='0%';return}
+  if(window._videoPlaying){state.turnEndsAt=Date.now()+60000;el.textContent='1:00';el.className='clock';if(bar){bar.style.width='100%';bar.style.background='#4ade80'}return}
+  const left=Math.max(0,Math.ceil((state.turnEndsAt-Date.now())/1000));
+  const mm=Math.floor(left/60),ss=left%60;
+  el.textContent=mm+':'+String(ss).padStart(2,'0');
+  el.className='clock'+(left<=10?' danger':left<=20?' warn':'');
+  if(bar){bar.style.width=(left/60*100)+'%';bar.style.background=left<=10?'var(--red)':left<=20?'var(--gold)':'var(--green)'}
+  if(left>0){
+    if(left<=5)SFX.tickUrgent();
+    else if(left<=15)SFX.tick();
+    else if(left<=30&&left%2===0)SFX.warn();
+  }
+  if(left<=0){SFX.buzz();state.turnEndsAt=Date.now()+999999;timeoutTurn()}
+}
+
+// ── Big Red ──
+function showBigRed(){
+  state.bigRedActive=true;save();
+  const el=document.getElementById('bigRedOverlay');
+  el.style.display='flex';
+  setMsg('BIG RED IS WATCHING — tap a tile blind!');
+  addLog(cp()+' triggered Big Red — picking blind!');
+  render();
+}
+function dismissBigRed(cb){
+  const el=document.getElementById('bigRedOverlay');
+  const img=document.getElementById('bigRedImg');
+  img.classList.add('brLeave');
+  setTimeout(()=>{
+    el.style.display='none';
+    img.classList.remove('brLeave');
+    if(cb)cb();
+  },380);
+}
+
+// ── Spin wheel ──
+const WHEEL_SEGS=[
+  {label:'FREE REVEAL', color:'#2F80ED', effect:'freereveal', w:25},
+  {label:'ALL LOSE 75', color:'#F2994A', effect:'allose75',   w:22},
+  {label:'+100 PTS',    color:'#56CCF2', effect:'plus100',    w:20},
+  {label:'STEAL 125',   color:'#F2C94C', effect:'steal125',   w:17},
+  {label:'BANKRUPT',    color:'#7b0000', effect:'bankrupt',   w:10},
+  {label:'SPECIAL TEAM',color:'#ffcc45', effect:'ndsu',       w:6},
+  {label:'UL MONROE',   color:'#BB6BD9', effect:'ulmonroe',   w:6},
+];
+const TOTAL_W=WHEEL_SEGS.reduce((s,g)=>s+g.w,0);
+function segArcs(){let st=0;return WHEEL_SEGS.map(g=>{const arc=(g.w/TOTAL_W)*2*Math.PI,s={...g,start:st,arc};st+=arc;return s})}
+let _spinning=false,_spinAngle=0,_landedSeg=null,_spinPlayer=null;
+
+function drawWheel(angle){
+  const cv=document.getElementById('wheelCanvas');if(!cv)return;
+  const ctx=cv.getContext('2d'),cx=150,cy=150,r=140;
+  ctx.clearRect(0,0,300,300);
+  const ulmIdx=TEAMS.findIndex(t=>t.University==='UL Monroe');
+  const ulmTaken=ulmIdx>=0&&state&&state.drafted[ulmIdx];
+  segArcs().forEach(seg=>{
+    const start=angle+seg.start,end=start+seg.arc;
+    const grayed=seg.effect==='ulmonroe'&&ulmTaken;
+    ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,start,end);ctx.closePath();
+    ctx.fillStyle=grayed?'#444':seg.color;ctx.fill();
+    ctx.strokeStyle='rgba(0,0,0,.5)';ctx.lineWidth=2;ctx.stroke();
+    ctx.save();ctx.translate(cx,cy);ctx.rotate(start+seg.arc/2);
+    ctx.textAlign='right';ctx.fillStyle='#fff';
+    ctx.font='bold 11px Oswald,Arial';ctx.shadowColor='rgba(0,0,0,.8)';ctx.shadowBlur=4;
+    ctx.fillText(seg.label,r-8,4);
+    ctx.restore();
+  });
+  ctx.beginPath();ctx.arc(cx,cy,18,0,2*Math.PI);
+  ctx.fillStyle='#07111f';ctx.fill();ctx.strokeStyle='#ffcc45';ctx.lineWidth=3;ctx.stroke();
+}
+
+function showWheelModal(player){
+  _spinPlayer=player;_spinning=false;_landedSeg=null;_spinAngle=0;
+  document.getElementById('wheelPlayer').textContent=player;
+  document.getElementById('wheelResult').textContent='';
+  document.getElementById('wheelSpinBtn').disabled=false;
+  document.getElementById('wheelSpinBtn').textContent='SPIN';
+  document.getElementById('wheelModal').style.display='flex';
+  drawWheel(0);
+}
+
+function doSpin(){
+  if(_spinning)return;
+  _spinning=true;
+  document.getElementById('wheelSpinBtn').disabled=true;
+  document.getElementById('wheelResult').textContent='';
+  SFX.reveal();
+  // Weighted random segment pick
+  const arcs=segArcs();
+  let rand=Math.random()*TOTAL_W,cumW=0,targetIdx=arcs.length-1;
+  for(let i=0;i<WHEEL_SEGS.length;i++){cumW+=WHEEL_SEGS[i].w;if(rand<cumW){targetIdx=i;break;}}
+  // Spin so segment center lands under pointer (top = -PI/2)
+  const seg=arcs[targetIdx];
+  const segCenter=seg.start+seg.arc/2;
+  const rounds=5+Math.floor(Math.random()*3);
+  const targetAngle=rounds*2*Math.PI+(-Math.PI/2-segCenter-(_spinAngle%(2*Math.PI)));
+  const duration=4500,t0=Date.now(),startAngle=_spinAngle;
+  function animate(){
+    const elapsed=Date.now()-t0,t=Math.min(elapsed/duration,1);
+    _spinAngle=startAngle+targetAngle*(1-Math.pow(1-t,4));
+    drawWheel(_spinAngle);
+    if(t<1){requestAnimationFrame(animate);}
+    else{
+      _spinning=false;_landedSeg=targetIdx;
+      document.getElementById('wheelResult').textContent='→ '+seg.label;
+      document.getElementById('wheelResult').style.color=seg.color;
+      document.getElementById('wheelSpinBtn').textContent='APPLY';
+      document.getElementById('wheelSpinBtn').disabled=false;
+      document.getElementById('wheelSpinBtn').onclick=applyWheelResult;
+      SFX.draft();
+    }
+  }
+  animate();
+}
+
+function applyWheelResult(){
+  if(_landedSeg===null)return;
+  const seg=WHEEL_SEGS[_landedSeg],p=_spinPlayer;
+  document.getElementById('wheelModal').style.display='none';
+  document.getElementById('wheelSpinBtn').onclick=doSpin;
+  switch(seg.effect){
+    case'plus100': state.points[p]+=100;addLog(p+' spun +100 pts!');showInfo('🎉 WHEEL RESULT',`${p} gains 100 Dynasty Points!`);break;
+    case'bankrupt': state.points[p]=0;state.mustDraft[p]=true;addLog(p+' went BANKRUPT!');showInfo('☠️ BANKRUPT',`${p} is wiped out — must draft!`);break;
+    case'freereveal': state.freeReveal=p;addLog(p+' won a FREE REVEAL!');showInfo('🎯 WHEEL RESULT',`${p} gets a free tile reveal — pick any tile!`);break;
+    case'steal125': chooseTarget(`${p} steals 125 pts from a player.`,t=>{const g=Math.min(125,state.points[t]);spend(t,125,true);state.points[p]+=g;if(!anyAffordable(t))state.mustDraft[t]=true;addLog(`${p} stole ${g} pts from ${t}.`);closeModal();render();},()=>{const arr=state.activePlayers.filter(x=>x!==p);const t=arr[Math.floor(Math.random()*arr.length)]||p;const g=Math.min(125,state.points[t]);spend(t,125,true);state.points[p]+=g;if(!anyAffordable(t))state.mustDraft[t]=true;addLog(`Auto-steal: ${p} took ${g} from ${t}.`);closeModal();render()});return;
+    case'allose75': state.activePlayers.forEach(x=>{spend(x,75,true);if(!anyAffordable(x))state.mustDraft[x]=true});addLog('Wheel: ALL lose 75 pts!');showInfo('💥 ALL LOSE 75',`Everyone loses 75 Dynasty Points!`);break;
+    case'ulmonroe':{
+      const ui=TEAMS.findIndex(t=>t.University==='UL Monroe');
+      if(ui>=0&&!state.drafted[ui]){
+        for(let c=0;c<COLS.length;c++)state.revealed[ui+'-'+c]=true;
+        state.drafted[ui]=true;state.draftedBy[ui]=p;state.draftedTeams[p]='UL Monroe';
+        addLog(`${p} drafted UL Monroe from the wheel!`);removePlayer(p);save();showCelebration(p,'UL Monroe',endTurn);return;
+      }else{state.points[p]+=100;addLog('UL Monroe taken — '+p+' gets +100.');showInfo('ALREADY DRAFTED',`UL Monroe was already taken! ${p} gets +100 pts instead.`);}
+      break;}
+    case'ndsu':
+      if(state.specialAvailable){state.specialAvailable=false;state.specialAdded=true;const r=TEAMS.length;for(let c=0;c<COLS.length;c++)state.revealed[r+'-'+c]=true;state.drafted[r]=true;state.draftedBy[r]=p;state.draftedTeams[p]='North Dakota State';addLog(`${p} spun NDSU from the wheel!`);removePlayer(p);save();showCelebration(p,'North Dakota State',endTurn);return;}
+      else{state.points[p]+=150;addLog('NDSU already taken — '+p+' gets +150 instead!');showInfo('NDSU TAKEN',`NDSU already claimed! ${p} gets +150 pts instead.`);}
+      break;
+  }
+  save();render();
+}
+
+// ── Draft video ──
+window._videoPlaying=false;
+
+function playDraftVideo(player,team,videoSrc,onDone){
+  const wrap=document.getElementById('draftVideo');
+  const vid=document.getElementById('draftVid');
+  document.getElementById('draftVidWho').textContent=player;
+  document.getElementById('draftVidWho').style.color=COLORS[player]||'#fff';
+  document.getElementById('draftVidTeam').textContent=team;
+  document.getElementById('draftVidTeam').style.color=COLORS[player]||'#fff';
+  vid.src=videoSrc;
+  wrap.style.display='flex';
+  window._videoPlaying=true;
+  window._videoDone=onDone||null;
+  vid.play().catch(()=>{});
+  vid.onended=()=>closeDraftVideo();
+  window._vidTimeout=setTimeout(()=>closeDraftVideo(),35000);
+}
+function closeDraftVideo(){
+  const wrap=document.getElementById('draftVideo'),vid=document.getElementById('draftVid');
+  vid.pause();vid.src='';
+  wrap.style.display='none';
+  if(window._vidTimeout){clearTimeout(window._vidTimeout);window._vidTimeout=null;}
+  window._videoPlaying=false;
+  if(state){state.turnEndsAt=Date.now()+60000;save();}
+  if(window._videoDone){const cb=window._videoDone;window._videoDone=null;cb();}
+  render();
+}
+function broadcastDraftVideo(player,team,onDone){
+  const src=TEAM_VIDEOS[team];
+  if(!src){if(onDone)onDone();return;}
+  if(window._fbVideoRef)window._fbVideoRef.set({player,team,src,t:Date.now()}).catch(()=>{});
+  playDraftVideo(player,team,src,onDone);
+}
+
+
+// ── Init ──
+buildHeader();
+</script>
+
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
 <script>
-const firebaseConfig = {
-  apiKey: "REPLACE_ME",
-  authDomain: "REPLACE_ME",
-  databaseURL: "REPLACE_ME",
-  projectId: "REPLACE_ME",
-  storageBucket: "REPLACE_ME",
-  messagingSenderId: "REPLACE_ME",
-  appId: "REPLACE_ME"
-};
-const TEAMS=[{"University": "Akron", "Off. Rating": 61, "Def. Rating": 61, "Dynasty Point Budget (NIL)": 605, "Pipeline Tier": "T3 & T1", "Top Pipeline Region/State": "Ohio", "Top Off. Skill Player": "WR (84)", "Top Def. Skill Player": "MLB (82)", "Avg. OL": 67, "Avg. DL": 68, "Avg. DB": 66, "QB Archetype": "Field General", "QB Power/Accuracy": "82 / 84", "HB Archetype": "Elusive", "Best HB Speed": 91, "Best WR Speed": 93, "Best WR Catching": 84, "Number of Seniors": 14}, {"University": "Kennesaw State", "Off. Rating": 66, "Def. Rating": 66, "Dynasty Point Budget (NIL)": 515, "Pipeline Tier": "T2 & T1", "Top Pipeline Region/State": "Georgia", "Top Off. Skill Player": "HB (86)", "Top Def. Skill Player": "EDGE (84)", "Avg. OL": 71, "Avg. DL": 70, "Avg. DB": 69, "QB Archetype": "Improviser", "QB Power/Accuracy": "87 / 80", "HB Archetype": "Power", "Best HB Speed": 89, "Best WR Speed": 92, "Best WR Catching": 82, "Number of Seniors": 12}, {"University": "Georgia State", "Off. Rating": 66, "Def. Rating": 64, "Dynasty Point Budget (NIL)": 680, "Pipeline Tier": "T2", "Top Pipeline Region/State": "S. Carolina", "Top Off. Skill Player": "WR (87)", "Top Def. Skill Player": "CB (85)", "Avg. OL": 72, "Avg. DL": 69, "Avg. DB": 71, "QB Archetype": "Scrambler", "QB Power/Accuracy": "89 / 78", "HB Archetype": "Receiving", "Best HB Speed": 90, "Best WR Speed": 95, "Best WR Catching": 80, "Number of Seniors": 15}, {"University": "Old Dominion", "Off. Rating": 64, "Def. Rating": 64, "Dynasty Point Budget (NIL)": 705, "Pipeline Tier": "T4 & T2", "Top Pipeline Region/State": "Tidewater", "Top Off. Skill Player": "TE (85)", "Top Def. Skill Player": "DT (84)", "Avg. OL": 74, "Avg. DL": 72, "Avg. DB": 70, "QB Archetype": "Field General", "QB Power/Accuracy": "81 / 88", "HB Archetype": "Power", "Best HB Speed": 87, "Best WR Speed": 90, "Best WR Catching": 86, "Number of Seniors": 18}, {"University": "South Alabama", "Off. Rating": 69, "Def. Rating": 71, "Dynasty Point Budget (NIL)": 570, "Pipeline Tier": "T3, T2, T1", "Top Pipeline Region/State": "Alabama", "Top Off. Skill Player": "WR (91)", "Top Def. Skill Player": "EDGE (89)", "Avg. OL": 78, "Avg. DL": 80, "Avg. DB": 79, "QB Archetype": "Scrambler", "QB Power/Accuracy": "92 / 82", "HB Archetype": "Elusive", "Best HB Speed": 94, "Best WR Speed": 96, "Best WR Catching": 87, "Number of Seniors": 11}, {"University": "UL Monroe", "Off. Rating": 66, "Def. Rating": 66, "Dynasty Point Budget (NIL)": 660, "Pipeline Tier": "T2", "Top Pipeline Region/State": "Texas", "Top Off. Skill Player": "HB (87)", "Top Def. Skill Player": "MLB (85)", "Avg. OL": 73, "Avg. DL": 71, "Avg. DB": 70, "QB Archetype": "Improviser", "QB Power/Accuracy": "86 / 82", "HB Archetype": "Elusive", "Best HB Speed": 92, "Best WR Speed": 91, "Best WR Catching": 84, "Number of Seniors": 16}, {"University": "Ball State", "Off. Rating": 64, "Def. Rating": 61, "Dynasty Point Budget (NIL)": 900, "Pipeline Tier": "T3 & T2", "Top Pipeline Region/State": "Indiana", "Top Off. Skill Player": "WR (83)", "Top Def. Skill Player": "S (82)", "Avg. OL": 66, "Avg. DL": 67, "Avg. DB": 65, "QB Archetype": "Field General", "QB Power/Accuracy": "79 / 83", "HB Archetype": "Power", "Best HB Speed": 88, "Best WR Speed": 90, "Best WR Catching": 82, "Number of Seniors": 20}, {"University": "Buffalo", "Off. Rating": 69, "Def. Rating": 71, "Dynasty Point Budget (NIL)": 870, "Pipeline Tier": "T2", "Top Pipeline Region/State": "N.Y.", "Top Off. Skill Player": "WR (92)", "Top Def. Skill Player": "CB (90)", "Avg. OL": 80, "Avg. DL": 79, "Avg. DB": 81, "QB Archetype": "Strong Arm", "QB Power/Accuracy": "94 / 84", "HB Archetype": "Elusive", "Best HB Speed": 95, "Best WR Speed": 97, "Best WR Catching": 88, "Number of Seniors": 10}, {"University": "Kent State", "Off. Rating": 64, "Def. Rating": 64, "Dynasty Point Budget (NIL)": 605, "Pipeline Tier": "T2", "Top Pipeline Region/State": "Ohio", "Top Off. Skill Player": "HB (84)", "Top Def. Skill Player": "MLB (83)", "Avg. OL": 68, "Avg. DL": 68, "Avg. DB": 67, "QB Archetype": "Improviser", "QB Power/Accuracy": "84 / 80", "HB Archetype": "Receiving", "Best HB Speed": 90, "Best WR Speed": 91, "Best WR Catching": 83, "Number of Seniors": 17}, {"University": "UMASS", "Off. Rating": 66, "Def. Rating": 66, "Dynasty Point Budget (NIL)": 980, "Pipeline Tier": "T2", "Top Pipeline Region/State": "Tidewater", "Top Off. Skill Player": "TE (86)", "Top Def. Skill Player": "EDGE (86)", "Avg. OL": 74, "Avg. DL": 74, "Avg. DB": 74, "QB Archetype": "Field General", "QB Power/Accuracy": "83 / 87", "HB Archetype": "Power", "Best HB Speed": 88, "Best WR Speed": 91, "Best WR Catching": 86, "Number of Seniors": 13}, {"University": "Sacramento State", "Off. Rating": 61, "Def. Rating": 61, "Dynasty Point Budget (NIL)": 515, "Pipeline Tier": "T2", "Top Pipeline Region/State": "California", "Top Off. Skill Player": "WR (85)", "Top Def. Skill Player": "CB (84)", "Avg. OL": 67, "Avg. DL": 66, "Avg. DB": 66, "QB Archetype": "Scrambler", "QB Power/Accuracy": "86 / 78", "HB Archetype": "Elusive", "Best HB Speed": 92, "Best WR Speed": 94, "Best WR Catching": 81, "Number of Seniors": 9}, {"University": "Delaware", "Off. Rating": 69, "Def. Rating": 66, "Dynasty Point Budget (NIL)": 515, "Pipeline Tier": "T1", "Top Pipeline Region/State": "N.Y.", "Top Off. Skill Player": "WR (90)", "Top Def. Skill Player": "EDGE (87)", "Avg. OL": 76, "Avg. DL": 75, "Avg. DB": 73, "QB Archetype": "Strong Arm", "QB Power/Accuracy": "93 / 81", "HB Archetype": "Receiving", "Best HB Speed": 91, "Best WR Speed": 95, "Best WR Catching": 85, "Number of Seniors": 8}, {"University": "FIU", "Off. Rating": 69, "Def. Rating": 69, "Dynasty Point Budget (NIL)": 625, "Pipeline Tier": "T3 & T1", "Top Pipeline Region/State": "Florida", "Top Off. Skill Player": "HB (89)", "Top Def. Skill Player": "S (88)", "Avg. OL": 75, "Avg. DL": 76, "Avg. DB": 78, "QB Archetype": "Improviser", "QB Power/Accuracy": "90 / 84", "HB Archetype": "Elusive", "Best HB Speed": 94, "Best WR Speed": 95, "Best WR Catching": 84, "Number of Seniors": 12}, {"University": "Jax State", "Off. Rating": 69, "Def. Rating": 66, "Dynasty Point Budget (NIL)": 650, "Pipeline Tier": "T2 & T1", "Top Pipeline Region/State": "Alabama", "Top Off. Skill Player": "HB (88)", "Top Def. Skill Player": "MLB (86)", "Avg. OL": 77, "Avg. DL": 75, "Avg. DB": 72, "QB Archetype": "Scrambler", "QB Power/Accuracy": "91 / 79", "HB Archetype": "Power", "Best HB Speed": 92, "Best WR Speed": 93, "Best WR Catching": 83, "Number of Seniors": 14}, {"University": "Sam Houston", "Off. Rating": 69, "Def. Rating": 66, "Dynasty Point Budget (NIL)": 515, "Pipeline Tier": "T2 & T1", "Top Pipeline Region/State": "Texas", "Top Off. Skill Player": "WR (89)", "Top Def. Skill Player": "CB (86)", "Avg. OL": 74, "Avg. DL": 74, "Avg. DB": 73, "QB Archetype": "Improviser", "QB Power/Accuracy": "88 / 83", "HB Archetype": "Receiving", "Best HB Speed": 91, "Best WR Speed": 94, "Best WR Catching": 85, "Number of Seniors": 15}, {"University": "New Mexico State", "Off. Rating": 66, "Def. Rating": 69, "Dynasty Point Budget (NIL)": 790, "Pipeline Tier": "T2", "Top Pipeline Region/State": "Arizona", "Top Off. Skill Player": "WR (88)", "Top Def. Skill Player": "EDGE (88)", "Avg. OL": 75, "Avg. DL": 78, "Avg. DB": 77, "QB Archetype": "Strong Arm", "QB Power/Accuracy": "95 / 80", "HB Archetype": "Elusive", "Best HB Speed": 93, "Best WR Speed": 96, "Best WR Catching": 84, "Number of Seniors": 11}, {"University": "Missouri State", "Off. Rating": 66, "Def. Rating": 64, "Dynasty Point Budget (NIL)": 515, "Pipeline Tier": "T1", "Top Pipeline Region/State": "Texas", "Top Off. Skill Player": "HB (86)", "Top Def. Skill Player": "DT (84)", "Avg. OL": 72, "Avg. DL": 70, "Avg. DB": 69, "QB Archetype": "Field General", "QB Power/Accuracy": "82 / 86", "HB Archetype": "Power", "Best HB Speed": 89, "Best WR Speed": 90, "Best WR Catching": 85, "Number of Seniors": 19}], COLS=["University", "Off. Rating", "Def. Rating", "Dynasty Point Budget (NIL)", "Pipeline Tier", "Top Pipeline Region/State", "Top Off. Skill Player", "Top Def. Skill Player", "Avg. OL", "Avg. DL", "Avg. DB", "QB Archetype", "QB Power/Accuracy", "HB Archetype", "Best HB Speed", "Best WR Speed", "Best WR Catching", "Number of Seniors"], COSTS={"University": null, "Off. Rating": 40, "Def. Rating": 40, "Dynasty Point Budget (NIL)": 125, "Pipeline Tier": 100, "Top Pipeline Region/State": 100, "Top Off. Skill Player": 75, "Top Def. Skill Player": 75, "Avg. OL": 50, "Avg. DL": 50, "Avg. DB": 50, "QB Archetype": 50, "QB Power/Accuracy": 75, "HB Archetype": 50, "Best HB Speed": 75, "Best WR Speed": 75, "Best WR Catching": 75, "Number of Seniors": 40}, PLAYERS=[{"id": "hagen", "name": "Hagen Sweazy", "color": "#2F80ED"}, {"id": "boone", "name": "Boone Goldsmith", "color": "#EB5757"}, {"id": "cody", "name": "Cody Morris", "color": "#F2994A"}, {"id": "duce", "name": "Duce True", "color": "#27AE60"}, {"id": "connor", "name": "Connor Givhan", "color": "#9B51E0", "advantage": "Tulsa"}, {"id": "jiffy", "name": "Jordan Walker (Jiffy)", "color": "#F2C94C", "advantage": "Memphis"}, {"id": "jacob", "name": "Jacob Nichols", "color": "#56CCF2", "advantage": "Rice"}, {"id": "zach", "name": "Zach Harp", "color": "#BB6BD9", "advantage": "Tulane"}];
-const PLAYER_BY_ID=Object.fromEntries(PLAYERS.map(p=>[p.id,p]));
-const EVENT_BAG=["Choose Player Lose 150 Dynasty Points","Choose Player Lose 150 Dynasty Points","Choose Player Lose 150 Dynasty Points","Choose Player Lose 150 Dynasty Points","Choose Player Lose 150 Dynasty Points","Choose Player Lose 150 Dynasty Points","Choose Player Lose 150 Dynasty Points","Choose Player Lose 150 Dynasty Points","Choose Player Lose 150 Dynasty Points","-100 Dynasty Points","-100 Dynasty Points","-100 Dynasty Points","Must Draft Now","Special Team Offer","Special Team Offer"];
-const SPECIAL_TEAM={"University":"North Dakota State","Off. Rating":"SPECIAL","Def. Rating":"SPECIAL","Dynasty Point Budget (NIL)":"SPECIAL","Pipeline Tier":"SPECIAL","Top Pipeline Region/State":"Dakotas","Top Off. Skill Player":"SPECIAL","Top Def. Skill Player":"SPECIAL","Avg. OL":"SPECIAL","Avg. DL":"SPECIAL","Avg. DB":"SPECIAL","QB Archetype":"SPECIAL","QB Power/Accuracy":"SPECIAL","HB Archetype":"SPECIAL","Best HB Speed":"SPECIAL","Best WR Speed":"SPECIAL","Best WR Catching":"SPECIAL","Number of Seniors":"SPECIAL"};
-let state=null, ref=null, modalTimer=null, lastTurn=null, lastPending=null, writeBusy=false;
-function params(){return new URLSearchParams(location.search)}
-function myId(){let p=params().get("player")||"duce"; return PLAYER_BY_ID[p]?p:"duce"}
-function isAdmin(){return myId()==="duce" && params().get("admin")==="true"}
-function pname(id){return PLAYER_BY_ID[id]?.name||id}
-function pcolor(id){return PLAYER_BY_ID[id]?.color||"#777"}
-function currentPlayer(){return state?.turnOrder?.[state.currentIndex]||null}
-function canAct(){return isAdmin() || myId()===currentPlayer()}
-function setMsg(t){document.getElementById("message").textContent=t}
-function addLog(s,t){s.log=s.log||[];s.log.unshift(t);s.log=s.log.slice(0,80)}
-function makeState(){let points={},eventMap={},hiddenLocks={},used=new Set();PLAYERS.forEach(p=>points[p.id]=500);while(used.size<EVENT_BAG.length){let r=Math.floor(Math.random()*TEAMS.length),c=1+Math.floor(Math.random()*(COLS.length-1));used.add(r+"-"+c)}[...used].forEach((id,i)=>eventMap[id]=EVENT_BAG[i]);let hi=0,hv=-1;TEAMS.forEach((t,i)=>{if(t["Dynasty Point Budget (NIL)"]>hv){hv=t["Dynasty Point Budget (NIL)"];hi=i}});hiddenLocks[hi+"-"+COLS.indexOf("Dynasty Point Budget (NIL)")]=true;while(Object.keys(hiddenLocks).length<5){let r=Math.floor(Math.random()*TEAMS.length),c=1+Math.floor(Math.random()*(COLS.length-1));hiddenLocks[r+"-"+c]=true}return{version:"true-live-1",points,revealed:{},drafted:{},draftedBy:{},draftedTeams:{},hiddenLocks,foundLocks:{},eventMap,turnOrder:PLAYERS.map(p=>p.id),currentIndex:0,turnEndsAt:Date.now()+60000,pendingEvent:null,specialAvailable:true,specialAdded:false,history:[],log:["Draft initialized."],announcement:null}}
-async function init(){document.getElementById("identityBox").textContent=pname(myId())+(isAdmin()?" • ADMIN":"");document.getElementById("adminPlayer").innerHTML=PLAYERS.map(p=>`<option value="${p.id}">${p.name}</option>`).join("");try{firebase.initializeApp(firebaseConfig);ref=firebase.database().ref("game/state");let snap=await ref.get();if(!snap.exists())await ref.set(makeState());ref.on("value",s=>{state=s.val();render();handleTurnAlert();handlePendingAlert();})}catch(e){setMsg("Firebase setup needed: replace firebaseConfig in index.html.");console.error(e)}}
-function save(mutator){if(!state||!ref||writeBusy)return;writeBusy=true;let s=JSON.parse(JSON.stringify(state));let h=JSON.parse(JSON.stringify(s));delete h.history;s.history=s.history||[];s.history.push(JSON.stringify(h));s.history=s.history.slice(-20);mutator(s);ref.set(s).finally(()=>writeBusy=false)}
-function renderScores(){let bar=document.getElementById("scorebar");bar.innerHTML="";PLAYERS.forEach(p=>{let drafted=state.draftedTeams?.[p.id],card=document.createElement("div");card.className="playerCard"+(p.id===currentPlayer()?" active":"")+(drafted?" out":"");card.style.borderColor=p.color;if(drafted)card.style.background=`linear-gradient(180deg, ${p.color}, #111827)`;card.innerHTML=`<div class="playerName">${p.name}</div>`+(drafted?`<div class="draftedTeamName">${drafted}</div>`:`<div class="playerPts">${state.points?.[p.id]??0}</div>`)+(p.advantage&&!drafted?`<div class="advTag">ADV</div>`:"");bar.appendChild(card)});document.getElementById("turnText").textContent=currentPlayer()?`Current: ${pname(currentPlayer())}${canAct()?" — YOUR TURN":" — view only"}`:"Draft Complete";document.getElementById("log").textContent=state.log?.[0]||"Ready."}
-function render(){if(!state)return;renderScores();let table=document.getElementById("board");table.innerHTML="";let all=state.specialAdded?[...TEAMS,SPECIAL_TEAM]:TEAMS;let head=document.createElement("tr"),dh=document.createElement("th");dh.textContent="Draft";dh.className="draftHead";head.appendChild(dh);COLS.forEach((c,i)=>{let th=document.createElement("th");th.textContent=c;if(i===0)th.className="uniHead";head.appendChild(th)});table.appendChild(head);all.forEach((team,r)=>{let tr=document.createElement("tr");if(state.drafted?.[r])tr.className="drafted";if(r>=TEAMS.length)tr.className+=" specialRow";let owner=state.draftedBy?.[r];if(owner)tr.style.background=pcolor(owner);let dtd=document.createElement("td");dtd.className="draftCell";let btn=document.createElement("button");btn.className="draftBtn";btn.textContent=state.drafted?.[r]?"DRAFTED":"Draft Team";btn.disabled=!!state.drafted?.[r]||!canAct()||!!state.pendingEvent||!currentPlayer();btn.onclick=()=>confirmDraft(r);dtd.appendChild(btn);tr.appendChild(dtd);COLS.forEach((col,c)=>{let td=document.createElement("td"),id=r+"-"+c,isUni=c===0,revealed=state.revealed?.[id]||state.drafted?.[r]||r>=TEAMS.length;if(isUni)td.classList.add("uniCell");if(owner)td.style.background=pcolor(owner);if(state.foundLocks?.[id]&&!revealed){td.className+=" locked";td.innerHTML="🔒<small>UNLOCK<br>100 PTS</small>";td.onclick=()=>unlockTile(r,c)}else if(isUni&&!revealed){td.className+=" university";td.innerHTML="<b>LOCKED</b>"}else if(revealed){td.className+=" revealed";td.textContent=team[col]}else{let cost=COSTS[col];td.className+=" tile";if(!canAct()||state.pendingEvent||(state.points?.[currentPlayer()]??0)<cost)td.className+=" disabled";td.innerHTML=`<span>${cost}</span><small>PTS</small>`;td.onclick=()=>tileClick(r,c)}tr.appendChild(td)});table.appendChild(tr)})}
-function spend(s,p,cost,force=false){if(force){s.points[p]=Math.max(0,(s.points[p]||0)-cost);return true}if((s.points[p]||0)<cost)return false;s.points[p]-=cost;return true}
-function anyAffordable(s,p){return Object.values(COSTS).some(v=>v&&(s.points?.[p]||0)>=v)}
-function endTurn(s){s.pendingEvent=null;if(s.turnOrder.length){s.currentIndex=(s.currentIndex+1)%s.turnOrder.length;s.turnEndsAt=Date.now()+60000;if(!anyAffordable(s,s.turnOrder[s.currentIndex]))addLog(s,`${pname(s.turnOrder[s.currentIndex])} must draft — no affordable reveals.`)}}
-function reveal(s,r,c,p){let id=r+"-"+c;s.revealed[id]=true;addLog(s,`${pname(p)} revealed Team ${r+1} — ${COLS[c]}: ${TEAMS[r][COLS[c]]}`);let ev=s.eventMap?.[id];if(!ev){endTurn(s);return}addLog(s,"EVENT: "+ev);if(ev==="-100 Dynasty Points"){spend(s,p,100,true);addLog(s,`${pname(p)} lost 100 points.`);endTurn(s);return}if(ev==="Special Team Offer"&&!s.specialAvailable){addLog(s,"SPECIAL TEAM ALREADY CLAIMED");endTurn(s);return}s.pendingEvent={id:Date.now()+"-"+Math.random(),ev,r,c,p,deadline:Date.now()+25000}}
-function tileClick(r,c){if(!canAct())return setMsg("Wait for your turn.");let p=currentPlayer(),id=r+"-"+c,cost=COSTS[COLS[c]];if(c===0||state.drafted?.[r]||state.pendingEvent)return;if((state.points?.[p]||0)<cost)return setMsg("Cannot afford this tile.");save(s=>{if(s.hiddenLocks?.[id]){delete s.hiddenLocks[id];s.foundLocks[id]=true;addLog(s,`${pname(p)} found a locked tile.`);endTurn(s);return}spend(s,p,cost);reveal(s,r,c,p)})}
-function unlockTile(r,c){if(!canAct())return setMsg("Wait for your turn.");let p=currentPlayer(),id=r+"-"+c;if((state.points?.[p]||0)<100)return setMsg("Need 100 points.");save(s=>{spend(s,p,100);delete s.foundLocks[id];addLog(s,`${pname(p)} unlocked a tile for 100.`);reveal(s,r,c,p)})}
-function confirmDraft(r){if(!canAct())return setMsg("Wait for your turn.");let p=currentPlayer(),adv=PLAYER_BY_ID[p]?.advantage;if(adv&&r<TEAMS.length)showModal("ARE YOU SURE?","You qualify for a Huge Advantage Team.",[["Draft Selected Team","yes",()=>{closeModal();draftTeam(r)}],["Choose Huge Advantage Team","gold",()=>{closeModal();draftAdvantage()}],["Cancel","no",closeModal]]);else showModal("ARE YOU SURE?","Draft this team?",[["Draft Team","yes",()=>{closeModal();draftTeam(r)}],["Cancel","no",closeModal]])}
-function removePlayer(s,p){let i=s.turnOrder.indexOf(p);if(i>=0){s.turnOrder.splice(i,1);if(s.currentIndex>=s.turnOrder.length)s.currentIndex=0}s.turnEndsAt=Date.now()+60000;s.pendingEvent=null}
-function draftTeam(r){let p=currentPlayer();save(s=>{for(let c=0;c<COLS.length;c++)s.revealed[r+"-"+c]=true;s.drafted[r]=true;s.draftedBy[r]=p;s.draftedTeams[p]=r<TEAMS.length?TEAMS[r].University:SPECIAL_TEAM.University;addLog(s,`${pname(p)} drafted ${s.draftedTeams[p]}.`);removePlayer(s,p)})}
-function draftAdvantage(){let p=currentPlayer(),team=PLAYER_BY_ID[p].advantage;showModal("HUGE ADVANTAGE TEAM",`<div class="advReveal">${pname(p)}<br>CHOSE A HUGE ADVANTAGE TEAM</div><div class="advReveal">${team}</div>`,[["Continue","yes",closeModal]]);save(s=>{s.draftedTeams[p]=team;addLog(s,`${pname(p)} CHOSE A HUGE ADVANTAGE TEAM: ${team}`);removePlayer(s,p)})}
-function draftSpecial(){let p=currentPlayer();save(s=>{s.specialAvailable=false;s.specialAdded=true;let r=TEAMS.length;for(let c=0;c<COLS.length;c++)s.revealed[r+"-"+c]=true;s.drafted[r]=true;s.draftedBy[r]=p;s.draftedTeams[p]="North Dakota State";addLog(s,`${pname(p)} drafted North Dakota State.`);removePlayer(s,p)})}
-function handlePendingAlert(){if(!state?.pendingEvent||!canAct())return;if(lastPending===state.pendingEvent.id)return;lastPending=state.pendingEvent.id;let pe=state.pendingEvent;if(pe.ev==="Choose Player Lose 150 Dynasty Points")showTimed("CHOOSE TARGET","Choose a player to lose 150.",state.turnOrder.filter(x=>x!==pe.p).map(x=>[pname(x),"gold",()=>{closeModal();save(s=>{spend(s,x,150,true);addLog(s,`${pname(x)} lost 150.`);endTurn(s)})}]),()=>{let arr=state.turnOrder.filter(x=>x!==pe.p),t=arr[Math.floor(Math.random()*arr.length)]||pe.p;save(s=>{spend(s,t,150,true);addLog(s,`Random target: ${pname(t)} lost 150.`);endTurn(s)})});if(pe.ev==="Must Draft Now")showTimed("MUST DRAFT NOW","You must draft any available team.",TEAMS.map((t,i)=>state.drafted?.[i]?null:[`Team ${i+1}`,"yes",()=>{closeModal();draftTeam(i)}]).filter(Boolean),()=>{let av=TEAMS.map((_,i)=>i).filter(i=>!state.drafted?.[i]);draftTeam(av[Math.floor(Math.random()*av.length)])});if(pe.ev==="Special Team Offer")showTimed("SPECIAL TEAM OFFER","A special team has entered the draft. Would you like to draft this team?",[["Draft Special Team","gold",()=>{closeModal();draftSpecial()}],["Pass","no",()=>{closeModal();save(s=>{s.specialAvailable=false;addLog(s,`${pname(pe.p)} passed on the special team.`);endTurn(s)})}]],()=>save(s=>{s.specialAvailable=false;addLog(s,"Special team auto-passed.");endTurn(s)}))}
-function handleTurnAlert(){let cp=currentPlayer();if(!cp||lastTurn===cp)return;lastTurn=cp;if(cp===myId()){document.body.classList.add("turnFlash");if(navigator.vibrate)navigator.vibrate([200,100,200]);showModal("YOUR TURN",`It is now <b>${pname(cp)}</b>'s turn.`,[["Let's Go","yes",closeModal]])}}
-function timeoutTurn(){if(!canAct()||state.pendingEvent)return;let p=currentPlayer();save(s=>{let cand=[];TEAMS.forEach((_,r)=>{if(!s.drafted?.[r])COLS.forEach((col,c)=>{let id=r+"-"+c;if(c>0&&!s.revealed?.[id]&&!s.foundLocks?.[id])cand.push([r,c])})});if(!cand.length){endTurn(s);return}let [r,c]=cand[Math.floor(Math.random()*cand.length)],id=r+"-"+c;if(s.hiddenLocks?.[id]){delete s.hiddenLocks[id];s.foundLocks[id]=true;addLog(s,"Timer expired. Random tile was locked.");endTurn(s);return}spend(s,p,COSTS[COLS[c]],true);reveal(s,r,c,p)})}
-function showModal(title,text,buttons){clearModalTimer();document.getElementById("modalTitle").textContent=title;document.getElementById("modalText").innerHTML=text;let a=document.getElementById("modalActions");a.innerHTML="";buttons.forEach(([l,cls,fn])=>{let b=document.createElement("button");b.textContent=l;b.className=cls;b.onclick=fn;a.appendChild(b)});document.getElementById("modal").classList.remove("hidden")}
-function showTimed(title,text,buttons,to){let left=Math.max(0,Math.ceil(((state.pendingEvent?.deadline||Date.now()+25000)-Date.now())/1000));showModal(title,text+`<br><br><b id="eventTimerText">${left}</b> seconds`,buttons);modalTimer=setInterval(()=>{left--;let e=document.getElementById("eventTimerText");if(e)e.textContent=Math.max(0,left);if(left<=0){clearModalTimer();closeModal();to()}},1000)}
-function clearModalTimer(){if(modalTimer){clearInterval(modalTimer);modalTimer=null}}
-function closeModal(){clearModalTimer();document.getElementById("modal").classList.add("hidden")}
-function toggleAdmin(){if(!isAdmin())return alert("Use Duce admin link.");document.getElementById("adminPanel").classList.toggle("hidden")}
-function adminSetActive(){if(!isAdmin())return;let p=document.getElementById("adminPlayer").value;save(s=>{let i=s.turnOrder.indexOf(p);if(i>=0){s.currentIndex=i;s.turnEndsAt=Date.now()+60000;s.pendingEvent=null}})}
-function nextTurn(){if(isAdmin())save(s=>endTurn(s))}
-function undoLast(){if(!isAdmin())return;let h=state.history||[];if(!h.length)return;let prev=JSON.parse(h[h.length-1]);prev.history=h.slice(0,-1);ref.set(prev)}
-function resetBoardConfirm(){if(isAdmin()&&confirm("Reset full live draft?"))ref.set(makeState())}
-function tick(){if(!state)return;if(state.pendingEvent){handlePendingAlert();return}let p=currentPlayer();if(!p){document.getElementById("timer").textContent="DONE";return}let left=Math.max(0,Math.ceil((state.turnEndsAt-Date.now())/1000)),el=document.getElementById("timer");el.textContent="0:"+String(left).padStart(2,"0");el.className="timer"+(left<=10?" danger":left<=30?" warn":"");if(left<=0&&canAct())timeoutTurn()}
-init();setInterval(tick,500);
+(function(){
+  const cfg={apiKey:"AIzaSyBW69cWLtIrFCwkhzoBfmUpjMhDw4cO8kA",authDomain:"ncaa-team-draft.firebaseapp.com",databaseURL:"https://ncaa-team-draft-default-rtdb.firebaseio.com",projectId:"ncaa-team-draft",storageBucket:"ncaa-team-draft.firebasestorage.app",messagingSenderId:"634745311809",appId:"1:634745311809:web:83ab53e82921b31569ecc0"};
+  const dot=()=>document.getElementById('connDot');
+  function startLocal(){load();render();checkYourTurn();setInterval(updateTimer,500);updateTimer()}
+  try{
+    if(!firebase.apps.length)firebase.initializeApp(cfg);
+    const db=firebase.database(),ref=db.ref('game/state');
+    window._fbRef=ref;
+    const vidRef=db.ref('game/video');
+    window._fbVideoRef=vidRef;
+    const _pageLoadT=Date.now();
+    vidRef.on('value',snap=>{
+      const d=snap.val();
+      if(!d||!d.src||!d.t)return;
+      if(d.t<_pageLoadT)return;
+      if(window._lastVidT&&d.t===window._lastVidT)return;
+      window._lastVidT=d.t;
+      playDraftVideo(d.player,d.team,d.src,()=>{if(state){state.turnEndsAt=Date.now()+60000;save();render()}});
+    });
+    db.ref('.info/connected').on('value',s=>{const d=dot();if(d)d.className='connDot '+(s.val()?'on':'off')});
+    ref.get().then(snap=>{
+      const d=snap.val();
+      if(d&&d.v){try{state=JSON.parse(d.v);localStorage.setItem('ncaaDraftV2',d.v)}catch(e){}}
+      startLocal();
+      ref.on('value',snap=>{
+        const d=snap.val();if(!d||!d.v)return;
+        if(d.t&&window._lastSaveT&&Math.abs(d.t-window._lastSaveT)<500)return;
+        const prevCp=state?cp():null;
+        try{state=JSON.parse(d.v);prevPoints={...state.points};localStorage.setItem('ncaaDraftV2',d.v)}catch(e){return}
+        const newCp=cp();
+        if(MY_NAME&&newCp===MY_NAME&&prevCp!==MY_NAME)showYourTurn();
+        lastTurnPlayer=newCp;
+        render();showToast('🔄 Synced');
+      });
+    }).catch(()=>startLocal());
+    window.NCAA_RESET=function(){if(!confirm('Reset live state?'))return;db.ref('game').remove().then(()=>location.reload())};
+  }catch(e){const d=dot();if(d)d.className='connDot off';startLocal();console.error('Firebase:',e)}
+})();
 </script>
 </body>
 </html>
