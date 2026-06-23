@@ -5,128 +5,135 @@
 <title>NCAA Dynasty Draft Show</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <style>
-:root{--bg:#07111f;--line:#1e3a5f;--line2:#2a4f7a;--gold:#ffcc45;--green:#4ade80;--red:#f87171;--text:#eef6ff;--muted:#7aa3c8;--draftW:88px;--uniW:100px;--cellW:108px;--cellH:68px}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;margin:0;overflow:hidden}
+:root{--line:#1e3a5f;--line2:#2a4f7a;--gold:#ffcc45;--green:#4ade80;--red:#f87171;--text:#eef6ff;--muted:#7aa3c8;--draftW:88px;--uniW:100px;--cellW:108px;--cellH:68px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
 body{font-family:-apple-system,'Helvetica Neue',Arial,sans-serif;background:#07111f;color:var(--text)}
 .app{height:100%;display:flex;flex-direction:column}
 
-/* Header */
-header{padding:10px 12px 8px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#0d1f38,#07111f);position:relative}
-h1{font-size:15px;margin:0;letter-spacing:.08em;text-transform:uppercase;font-weight:900}
-.sub{font-size:10px;color:var(--muted);margin-top:1px;letter-spacing:.04em}
-.controls{display:grid;grid-template-columns:1fr auto auto;gap:6px;margin-top:8px}
-select,button{border:1px solid var(--line2);border-radius:10px;background:rgba(255,255,255,.05);color:var(--text);min-height:38px;font-size:13px;font-weight:700;cursor:pointer;transition:background .15s}
-button{padding:0 12px}
-.adminBtn{background:rgba(255,180,0,.12);border-color:#8e7321;color:var(--gold)}
-.conn-dot{position:absolute;top:12px;right:12px;width:7px;height:7px;border-radius:50%;background:#444;transition:background .5s}
-.conn-dot.online{background:var(--green);box-shadow:0 0 6px var(--green)}
-.conn-dot.offline{background:var(--red)}
+/* ── Header ── */
+header{padding:10px 12px 8px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,#0d1f38,#07111f);flex-shrink:0}
+.hrow{display:flex;align-items:center;justify-content:space-between;gap:8px}
+h1{font-size:13px;letter-spacing:.09em;text-transform:uppercase;font-weight:900;flex:1}
+.connDot{width:7px;height:7px;border-radius:50%;background:#444;transition:background .5s;flex-shrink:0}
+.connDot.on{background:var(--green);box-shadow:0 0 6px var(--green)}
+.connDot.off{background:var(--red)}
+.identity{font-size:11px;margin-top:4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.idName{font-size:13px;font-weight:900}
+.badge{font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:20px;background:rgba(255,255,255,.07);border:1px solid var(--line2);color:var(--muted)}
+.adminBtn{background:rgba(255,180,0,.12);border:1px solid #8e7321;border-radius:8px;color:var(--gold);font-size:12px;font-weight:700;padding:5px 11px;cursor:pointer;margin-top:5px;display:block}
 
-/* Scorebar */
-.scorebar{display:flex;gap:6px;padding:8px 10px;background:#060f1a;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none}
-.scorebar::-webkit-scrollbar{display:none}
-.playerCard{min-width:96px;border:2px solid var(--line);border-radius:14px;padding:7px 8px;background:#0d1e35;text-align:center;transition:transform .2s,box-shadow .3s,border-color .3s;flex-shrink:0}
-.playerCard.active{transform:translateY(-2px);border-color:var(--gold)!important;animation:cardPulse 2s ease-in-out infinite}
-@keyframes cardPulse{0%,100%{box-shadow:0 0 0 2px rgba(255,204,69,.25),0 4px 16px rgba(255,204,69,.12)}50%{box-shadow:0 0 0 4px rgba(255,204,69,.4),0 4px 24px rgba(255,204,69,.22)}}
-.playerCard.out{opacity:.75}
-.pName{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--muted);font-weight:600}
-.pPts{font-size:20px;font-weight:900;color:var(--gold);line-height:1.1}
-.pPts.up{animation:flashUp .45s ease-out}
-.pPts.dn{animation:flashDn .45s ease-out}
-@keyframes flashUp{0%{color:var(--green);transform:scale(1.35)}100%{color:var(--gold);transform:scale(1)}}
-@keyframes flashDn{0%{color:var(--red);transform:scale(1.2)}100%{color:var(--gold);transform:scale(1)}}
-.pTeam{font-size:11px;font-weight:800;line-height:1.2;margin-top:2px}
-.pAdv{font-size:9px;color:var(--gold);font-weight:700;margin-top:2px}
+/* ── Scorebar ── */
+.sbar{display:flex;gap:5px;padding:7px 10px;background:#060f1a;border-bottom:1px solid var(--line);overflow-x:auto;scrollbar-width:none;flex-shrink:0}
+.sbar::-webkit-scrollbar{display:none}
+.pc{min-width:86px;border:2px solid var(--line);border-radius:12px;padding:6px 7px;background:#0d1e35;text-align:center;flex-shrink:0;transition:transform .2s,box-shadow .3s}
+.pc.act{transform:translateY(-2px);border-color:var(--gold)!important;animation:cardPulse 2s ease-in-out infinite}
+@keyframes cardPulse{0%,100%{box-shadow:0 0 0 2px rgba(255,204,69,.22),0 4px 14px rgba(255,204,69,.1)}50%{box-shadow:0 0 0 4px rgba(255,204,69,.38),0 4px 20px rgba(255,204,69,.2)}}
+.pn{font-size:9px;color:var(--muted);font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pp{font-size:19px;font-weight:900;color:var(--gold);line-height:1.1}
+.pp.up{animation:fup .45s ease-out}
+.pp.dn{animation:fdn .45s ease-out}
+@keyframes fup{0%{color:var(--green);transform:scale(1.35)}100%{color:var(--gold);transform:scale(1)}}
+@keyframes fdn{0%{color:var(--red);transform:scale(1.2)}100%{color:var(--gold);transform:scale(1)}}
+.pt{font-size:10px;font-weight:800;line-height:1.2;margin-top:2px}
+.padv{font-size:8px;color:var(--gold);font-weight:700;margin-top:1px}
 
-/* Timer bar */
-.timerProgress{height:3px;background:var(--line)}
-.timerProgressBar{height:100%;background:var(--green);transition:width .5s linear,background .3s}
+/* ── Timer progress ── */
+.tpbar{height:3px;background:var(--line);flex-shrink:0}
+.tpfill{height:100%;background:var(--green);transition:width .5s linear,background .3s}
 
-/* Turn bar */
-.timerBar{display:flex;justify-content:space-between;align-items:center;padding:7px 12px;background:#08101c;border-bottom:1px solid var(--line);gap:10px}
-.turnText{flex:1;min-width:0}
-.turnName{font-size:14px;font-weight:900;display:block}
+/* ── Turn bar ── */
+.turnBar{display:flex;align-items:center;padding:6px 12px;background:#08101c;border-bottom:1px solid var(--line);gap:8px;flex-shrink:0}
+.turnInfo{flex:1;min-width:0}
+.turnName{font-size:13px;font-weight:900;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .turnHint{font-size:10px;color:var(--muted)}
-.timer{font-size:28px;font-weight:900;color:var(--green);font-variant-numeric:tabular-nums;min-width:52px;text-align:right;transition:color .3s}
-.timer.warn{color:var(--gold)}
-.timer.danger{color:var(--red);animation:timerBlink .5s ease-in-out infinite}
-@keyframes timerBlink{0%,100%{opacity:1}50%{opacity:.5}}
+.clock{font-size:26px;font-weight:900;color:var(--green);font-variant-numeric:tabular-nums;min-width:48px;text-align:right;transition:color .3s}
+.clock.warn{color:var(--gold)}
+.clock.danger{color:var(--red);animation:tblink .5s ease-in-out infinite}
+@keyframes tblink{0%,100%{opacity:1}50%{opacity:.45}}
 
-/* Board */
-.boardWrap{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:6px 8px 120px}
+/* ── Board ── */
+.boardWrap{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;padding:5px 7px 110px}
 table{border-collapse:separate;border-spacing:4px;table-layout:fixed;min-width:calc(var(--draftW) + var(--uniW) + 17 * var(--cellW))}
-th,td{width:var(--cellW);min-width:var(--cellW);max-width:var(--cellW);height:var(--cellH);border-radius:10px;border:1px solid #1c3455;text-align:center;font-weight:900;vertical-align:middle}
-th{position:sticky;top:0;z-index:4;background:#0e1f36;font-size:9px;line-height:11px;text-transform:uppercase;padding:4px;letter-spacing:.04em;color:var(--muted)}
-th.draftHead,td.draftCell{position:sticky;left:0;z-index:6;width:var(--draftW);min-width:var(--draftW);max-width:var(--draftW)}
-th.uniHead,td.uniCell{position:sticky;left:calc(var(--draftW) + 4px);z-index:5;width:var(--uniW);min-width:var(--uniW);max-width:var(--uniW)}
-th.draftHead,th.uniHead{z-index:8}
-td.draftCell{background:#0b1a2e}
-.draftBtn{width:100%;height:52px;border-radius:8px;background:linear-gradient(180deg,#1f9f56,#157a3e);border:1px solid #2fd67a;color:#fff;font-size:11px;font-weight:800;line-height:13px;cursor:pointer;transition:transform .1s,box-shadow .2s}
-.draftBtn:not(:disabled):hover{box-shadow:0 0 14px rgba(47,214,122,.4)}
+th,td{width:var(--cellW);min-width:var(--cellW);max-width:var(--cellW);height:var(--cellH);border-radius:9px;border:1px solid #1c3455;text-align:center;font-weight:900;vertical-align:middle}
+th{position:sticky;top:0;z-index:4;background:#0e1f36;font-size:8.5px;line-height:10px;text-transform:uppercase;padding:4px;color:var(--muted);letter-spacing:.04em}
+th.dh,td.dc{position:sticky;left:0;z-index:6;width:var(--draftW);min-width:var(--draftW);max-width:var(--draftW)}
+th.uh,td.uc{position:sticky;left:calc(var(--draftW) + 4px);z-index:5;width:var(--uniW);min-width:var(--uniW);max-width:var(--uniW)}
+th.dh,th.uh{z-index:8}
+td.dc{background:#0b1a2e}
+.draftBtn{width:100%;height:50px;border-radius:8px;background:linear-gradient(180deg,#1f9f56,#157a3e);border:1px solid #2fd67a;color:#fff;font-size:11px;font-weight:800;cursor:pointer;transition:transform .1s,box-shadow .15s;line-height:13px}
+.draftBtn:not(:disabled):hover{box-shadow:0 0 12px rgba(47,214,122,.4)}
 .draftBtn:not(:disabled):active{transform:scale(.96)}
-.draftBtn:disabled{background:#2a3545;border-color:#3a4a5a;color:#566780;cursor:default}
-.tile{background:linear-gradient(180deg,#162845,#0f1e37);font-size:22px;cursor:pointer;transition:transform .1s,box-shadow .2s;position:relative;overflow:hidden}
-.tile:not(.disabled):hover{transform:scale(1.04);box-shadow:0 0 14px rgba(100,160,255,.25)}
-.tile:not(.disabled):active{transform:scale(.97)}
-.tile small{display:block;font-size:10px;color:#8ab4d8;font-weight:600}
-.tile.disabled{opacity:.28;filter:grayscale(.8);cursor:default}
-.tile.disabled:hover{transform:none;box-shadow:none}
-.university{background:#0c1828;color:#5a7a9a;font-size:11px;font-weight:700}
-.revealed{background:linear-gradient(180deg,#143322,#0c2218);border-color:#2a9954!important;font-size:12px;line-height:14px;padding:4px;overflow:hidden;text-overflow:ellipsis;color:#d4f0e0}
-.revealed.pop{animation:revealPop .5s cubic-bezier(.34,1.56,.64,1)}
-@keyframes revealPop{0%{transform:scale(.75);opacity:0;background:linear-gradient(180deg,#1a6640,#104d2a)}60%{transform:scale(1.06)}100%{transform:scale(1);opacity:1}}
-.locked{background:linear-gradient(180deg,#2d2050,#1e1438);border-color:#a78bfa!important;color:#c4b5fd;font-size:22px;cursor:pointer;animation:lockGlow 2s ease-in-out infinite}
-.locked small{display:block;font-size:9px;color:#ddd6fe;margin-top:2px;line-height:11px;font-weight:700}
-@keyframes lockGlow{0%,100%{box-shadow:0 0 6px rgba(167,139,250,.3)}50%{box-shadow:0 0 18px rgba(167,139,250,.65)}}
-.drafted td{border-color:rgba(255,255,255,.28)!important}
-.specialRow td{background:#5a3f08!important;border-color:#ffcc45!important}
+.draftBtn:disabled{background:#253040;border-color:#354055;color:#4a6080;cursor:default}
+.tile{background:linear-gradient(180deg,#162845,#0f1e37);font-size:20px;cursor:pointer;transition:transform .1s,box-shadow .15s}
+.tile:not(.dis):hover{transform:scale(1.04);box-shadow:0 0 12px rgba(100,160,255,.22)}
+.tile:not(.dis):active{transform:scale(.97)}
+.tile small{display:block;font-size:9.5px;color:#8ab4d8;font-weight:600}
+.tile.dis{opacity:.25;filter:grayscale(.8);cursor:default}
+.unic{background:#0c1828;color:#5a7a9a;font-size:10.5px;font-weight:700}
+.rev{background:linear-gradient(180deg,#143322,#0c2218);border-color:#2a9954!important;font-size:11px;line-height:13px;padding:4px;overflow:hidden;text-overflow:ellipsis;color:#d4f0e0}
+.rev.pop{animation:rpop .5s cubic-bezier(.34,1.56,.64,1)}
+@keyframes rpop{0%{transform:scale(.75);opacity:0}60%{transform:scale(1.06)}100%{transform:scale(1);opacity:1}}
+.lkd{background:linear-gradient(180deg,#2d2050,#1e1438);border-color:#a78bfa!important;color:#c4b5fd;font-size:20px;animation:lglow 2s ease-in-out infinite;cursor:pointer}
+.lkd small{display:block;font-size:8.5px;color:#ddd6fe;margin-top:1px;font-weight:700}
+@keyframes lglow{0%,100%{box-shadow:0 0 5px rgba(167,139,250,.28)}50%{box-shadow:0 0 16px rgba(167,139,250,.6)}}
+.drafted td{border-color:rgba(255,255,255,.22)!important}
+.specialRow td{background:#5a3f08!important;border-color:var(--gold)!important}
 
-/* Bottom panel */
-.bottomPanel{position:fixed;bottom:0;left:0;right:0;background:rgba(6,12,22,.97);border-top:1px solid var(--line);padding:10px 12px calc(10px + env(safe-area-inset-bottom));z-index:10;backdrop-filter:blur(8px)}
-.message{font-size:13px;font-weight:800;line-height:17px;max-height:36px;overflow:hidden}
-.log{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+/* ── Bottom panel ── */
+.bottom{position:fixed;bottom:0;left:0;right:0;background:rgba(6,12,22,.97);border-top:1px solid var(--line);padding:10px 12px calc(10px + env(safe-area-inset-bottom));z-index:10;backdrop-filter:blur(8px)}
+.bmsg{font-size:13px;font-weight:800;line-height:17px;max-height:36px;overflow:hidden}
+.blog{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
 
-/* Modal */
-.modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.82);z-index:30;padding:16px;backdrop-filter:blur(4px)}
+/* ── Modal overlay ── */
+.overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.84);z-index:30;padding:16px;backdrop-filter:blur(5px)}
 .hidden{display:none!important}
 .box{width:min(480px,96vw);background:linear-gradient(180deg,#131f35,#0d1828);border:1px solid var(--line2);border-radius:20px;padding:20px;box-shadow:0 24px 80px rgba(0,0,0,.7)}
-.box h2{margin:0 0 10px;color:var(--gold);font-size:22px;font-weight:900}
-.box p{font-size:15px;line-height:1.5;color:#cfe0f5;margin:0}
-.actions{display:grid;gap:8px;margin-top:16px}
-.actions button{min-height:48px;font-size:15px;font-weight:800;border-radius:12px}
-.yes{background:linear-gradient(180deg,#1f9f56,#157a3e);border-color:#2fd67a}
-.no{background:linear-gradient(180deg,#5a1e2a,#3d1520);border-color:var(--red)}
-.gold{background:linear-gradient(180deg,#7a5f10,#5a4008);border-color:var(--gold)}
+.box h2{margin:0 0 10px;color:var(--gold);font-size:21px;font-weight:900}
+.box p{font-size:14px;line-height:1.5;color:#cfe0f5}
+.acts{display:grid;gap:8px;margin-top:14px}
+.acts button{min-height:46px;font-size:14px;font-weight:800;border-radius:11px;border:1px solid;cursor:pointer}
+.yes{background:linear-gradient(180deg,#1f9f56,#157a3e);border-color:#2fd67a;color:#fff}
+.no{background:linear-gradient(180deg,#5a1e2a,#3d1520);border-color:var(--red);color:var(--red)}
+.gold{background:linear-gradient(180deg,#7a5f10,#5a4008);border-color:var(--gold);color:var(--gold)}
 
-/* Admin */
-.adminPanel{position:fixed;left:8px;right:8px;bottom:90px;background:linear-gradient(180deg,#10192e,#0a1220);border:1px solid var(--gold);border-radius:16px;padding:14px;z-index:22;box-shadow:0 8px 32px rgba(0,0,0,.5)}
+/* ── YOUR TURN popup ── */
+.ytOverlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.88);z-index:50;backdrop-filter:blur(6px)}
+.ytBox{text-align:center;padding:36px 28px;border-radius:22px;max-width:340px;width:92%;animation:ytPop .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes ytPop{0%{transform:scale(.5);opacity:0}100%{transform:scale(1);opacity:1}}
+.ytLabel{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;opacity:.7;margin-bottom:10px}
+.ytName{font-size:30px;font-weight:900;line-height:1.1}
+.ytSub{font-size:12px;opacity:.55;margin-top:10px}
+
+/* ── Draft celebration ── */
+.celOverlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.93);z-index:100;padding:16px}
+.celBox{text-align:center;padding:30px 22px;border-radius:22px;max-width:360px;width:92%;animation:celIn .4s cubic-bezier(.34,1.56,.64,1)}
+@keyframes celIn{0%{transform:scale(.5);opacity:0}100%{transform:scale(1);opacity:1}}
+.celWho{font-size:12px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;opacity:.8}
+.celVerb{font-size:10px;opacity:.55;letter-spacing:.1em;text-transform:uppercase;margin:5px 0}
+.celTeam{font-size:28px;font-weight:900;line-height:1.1;margin:10px 0}
+.celPts{font-size:12px;opacity:.55}
+.celTap{font-size:11px;opacity:.35;margin-top:14px}
+.advReveal{font-size:26px;color:var(--gold);font-weight:900;text-align:center;margin:12px 0}
+
+/* ── Admin panel ── */
+.adminPanel{position:fixed;left:8px;right:8px;bottom:88px;background:linear-gradient(180deg,#10192e,#0a1220);border:1px solid var(--gold);border-radius:16px;padding:14px;z-index:22;box-shadow:0 8px 32px rgba(0,0,0,.5)}
 .adminGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
-.adminGrid button{min-height:42px;font-size:13px}
+.adminGrid button{min-height:42px;font-size:13px;font-weight:700;border-radius:8px;border:1px solid var(--line2);background:rgba(255,255,255,.05);color:var(--text);cursor:pointer}
+.adminGrid select{height:42px;font-size:13px;border:1px solid var(--line2);border-radius:8px;background:#0d1828;color:var(--text);padding:0 8px}
 
-/* Draft celebration */
-#celebration{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;z-index:100;background:rgba(0,0,0,.9)}
-.celeb{text-align:center;padding:32px;border-radius:24px;max-width:380px;width:92%;animation:celebIn .4s cubic-bezier(.34,1.56,.64,1)}
-@keyframes celebIn{0%{transform:scale(.5);opacity:0}100%{transform:scale(1);opacity:1}}
-.celeb-who{font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;opacity:.8}
-.celeb-verb{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;opacity:.6;margin:4px 0}
-.celeb-team{font-size:34px;font-weight:900;line-height:1.1;margin:10px 0}
-.celeb-pts{font-size:12px;opacity:.6;margin-top:6px}
-.celeb-tap{margin-top:18px;font-size:11px;opacity:.4}
-.advReveal{font-size:28px;color:var(--gold);font-weight:900;text-align:center;margin:14px 0}
-
-/* Confetti */
-#confetti{position:fixed;inset:0;pointer-events:none;z-index:99;display:none}
-
-/* Toast */
-#toast{position:fixed;bottom:115px;left:50%;transform:translateX(-50%);background:rgba(15,28,50,.96);border:1px solid var(--line2);border-radius:20px;padding:8px 18px;font-size:13px;font-weight:700;z-index:50;pointer-events:none;opacity:0;transition:opacity .2s;white-space:nowrap;box-shadow:0 4px 20px rgba(0,0,0,.4)}
+/* ── Toast ── */
+#toast{position:fixed;bottom:110px;left:50%;transform:translateX(-50%);background:rgba(14,26,48,.97);border:1px solid var(--line2);border-radius:20px;padding:8px 18px;font-size:12px;font-weight:700;z-index:60;pointer-events:none;opacity:0;transition:opacity .2s;white-space:nowrap}
 #toast.show{opacity:1}
 
+/* ── Confetti ── */
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:99;display:none}
+
 @media(min-width:700px){
-  :root{--draftW:110px;--uniW:120px;--cellW:128px;--cellH:66px}
-  h1{font-size:20px}
-  .playerCard{min-width:110px}
-  .pPts{font-size:22px}
+  :root{--draftW:110px;--uniW:120px;--cellW:125px;--cellH:66px}
+  h1{font-size:17px}
+  .pc{min-width:100px}
+  .pp{font-size:21px}
 }
 </style>
 </head>
@@ -134,33 +141,20 @@ td.draftCell{background:#0b1a2e}
 <canvas id="confetti"></canvas>
 
 <div class="app">
-  <header>
-    <div class="conn-dot" id="connDot"></div>
-    <h1>NCAA Dynasty Draft Show</h1>
-    <div class="sub">Live · 8 Players · v1.3</div>
-    <div class="controls">
-      <select id="viewPlayer"></select>
-      <button class="adminBtn" onclick="toggleAdmin()">⚙ Duce</button>
-      <button onclick="resetBoardConfirm()">Reset</button>
-    </div>
-  </header>
-
-  <div class="scorebar" id="scorebar"></div>
-  <div class="timerProgress"><div class="timerProgressBar" id="tpBar"></div></div>
-
-  <div class="timerBar">
-    <div class="turnText">
+  <header id="header"></header>
+  <div class="sbar" id="sbar"></div>
+  <div class="tpbar"><div class="tpfill" id="tpf" style="width:100%"></div></div>
+  <div class="turnBar">
+    <div class="turnInfo">
       <span class="turnName" id="turnName">—</span>
       <span class="turnHint" id="turnHint"></span>
     </div>
-    <div class="timer" id="timer">1:00</div>
+    <div class="clock" id="clock">1:00</div>
   </div>
-
   <div class="boardWrap"><table id="board"></table></div>
-
-  <div class="bottomPanel">
-    <div class="message" id="message">Only current player can act.</div>
-    <div class="log" id="log">Ready.</div>
+  <div class="bottom">
+    <div class="bmsg" id="msg">Welcome to the Dynasty Draft Show.</div>
+    <div class="blog" id="log">Loading...</div>
   </div>
 </div>
 
@@ -169,34 +163,48 @@ td.draftCell{background:#0b1a2e}
   <div class="adminGrid">
     <select id="adminPlayer"></select>
     <button onclick="adminSetActive()">Set Active</button>
-    <button onclick="nextTurn()">Next Turn</button>
+    <button onclick="doNextTurn()">Next Turn</button>
     <button onclick="undoLast()">↩ Undo</button>
-    <button onclick="resetBoardConfirm()" style="border-color:var(--red);color:var(--red)">Reset Board</button>
-    <button onclick="toggleAdmin()">Close</button>
+    <button onclick="resetBoardConfirm()" style="color:var(--red);border-color:var(--red)">Reset Board</button>
+    <button onclick="document.getElementById('adminPanel').classList.add('hidden')">Close</button>
   </div>
 </div>
 
-<div id="modal" class="modal hidden">
+<div id="modal" class="overlay hidden">
   <div class="box">
     <h2 id="modalTitle"></h2>
     <p id="modalText"></p>
-    <div class="actions" id="modalActions"></div>
+    <div class="acts" id="modalActs"></div>
   </div>
 </div>
 
-<div id="celebration" class="hidden">
-  <div class="celeb" id="celebBox">
-    <div class="celeb-who" id="celebWho"></div>
-    <div class="celeb-verb">DRAFTED</div>
-    <div class="celeb-team" id="celebTeam"></div>
-    <div class="celeb-pts" id="celebPts"></div>
-    <div class="celeb-tap">Tap anywhere to continue</div>
+<div id="ytDiv" class="ytOverlay hidden">
+  <div class="ytBox" id="ytBox">
+    <div class="ytLabel">YOUR TURN</div>
+    <div class="ytName" id="ytName"></div>
+    <div class="ytSub">Tap to play</div>
+  </div>
+</div>
+
+<div id="celDiv" class="celOverlay hidden">
+  <div class="celBox" id="celBox">
+    <div class="celWho" id="celWho"></div>
+    <div class="celVerb">DRAFTED</div>
+    <div class="celTeam" id="celTeam"></div>
+    <div class="celPts" id="celPts"></div>
+    <div class="celTap">Tap anywhere to continue</div>
   </div>
 </div>
 
 <div id="toast"></div>
 
 <script>
+// ── Identity from URL (no dropdown) ──
+const PLAYER_IDS={hagen:"Hagen Sweazy",boone:"Boone Goldsmith",cody:"Cody Morris",duce:"Duce True",connor:"Connor Givhan",jiffy:"Jordan Walker (Jiffy)",jacob:"Jacob Nichols",zach:"Zach Harp"};
+const _p=new URLSearchParams(window.location.search);
+const MY_NAME=_p.get('player')?PLAYER_IDS[_p.get('player')]||null:null;
+const IS_ADMIN=_p.get('player')==='duce'&&_p.get('admin')==='true';
+
 // ── Game data ──
 const TEAMS=[{"University":"Akron","Off. Rating":61,"Def. Rating":61,"Dynasty Point Budget (NIL)":605,"Pipeline Tier":"T3 & T1","Top Pipeline Region/State":"Ohio","Top Off. Skill Player":"WR (84)","Top Def. Skill Player":"MLB (82)","Avg. OL":67,"Avg. DL":68,"Avg. DB":66,"QB Archetype":"Field General","QB Power/Accuracy":"82 / 84","HB Archetype":"Elusive","Best HB Speed":91,"Best WR Speed":93,"Best WR Catching":84,"Number of Seniors":14},{"University":"Kennesaw State","Off. Rating":66,"Def. Rating":66,"Dynasty Point Budget (NIL)":515,"Pipeline Tier":"T2 & T1","Top Pipeline Region/State":"Georgia","Top Off. Skill Player":"HB (86)","Top Def. Skill Player":"EDGE (84)","Avg. OL":71,"Avg. DL":70,"Avg. DB":69,"QB Archetype":"Improviser","QB Power/Accuracy":"87 / 80","HB Archetype":"Power","Best HB Speed":89,"Best WR Speed":92,"Best WR Catching":82,"Number of Seniors":12},{"University":"Georgia State","Off. Rating":66,"Def. Rating":64,"Dynasty Point Budget (NIL)":680,"Pipeline Tier":"T2","Top Pipeline Region/State":"S. Carolina","Top Off. Skill Player":"WR (87)","Top Def. Skill Player":"CB (85)","Avg. OL":72,"Avg. DL":69,"Avg. DB":71,"QB Archetype":"Scrambler","QB Power/Accuracy":"89 / 78","HB Archetype":"Receiving","Best HB Speed":90,"Best WR Speed":95,"Best WR Catching":80,"Number of Seniors":15},{"University":"Old Dominion","Off. Rating":64,"Def. Rating":64,"Dynasty Point Budget (NIL)":705,"Pipeline Tier":"T4 & T2","Top Pipeline Region/State":"Tidewater","Top Off. Skill Player":"TE (85)","Top Def. Skill Player":"DT (84)","Avg. OL":74,"Avg. DL":72,"Avg. DB":70,"QB Archetype":"Field General","QB Power/Accuracy":"81 / 88","HB Archetype":"Power","Best HB Speed":87,"Best WR Speed":90,"Best WR Catching":86,"Number of Seniors":18},{"University":"South Alabama","Off. Rating":69,"Def. Rating":71,"Dynasty Point Budget (NIL)":570,"Pipeline Tier":"T3, T2, T1","Top Pipeline Region/State":"Alabama","Top Off. Skill Player":"WR (91)","Top Def. Skill Player":"EDGE (89)","Avg. OL":78,"Avg. DL":80,"Avg. DB":79,"QB Archetype":"Scrambler","QB Power/Accuracy":"92 / 82","HB Archetype":"Elusive","Best HB Speed":94,"Best WR Speed":96,"Best WR Catching":87,"Number of Seniors":11},{"University":"UL Monroe","Off. Rating":66,"Def. Rating":66,"Dynasty Point Budget (NIL)":660,"Pipeline Tier":"T2","Top Pipeline Region/State":"Texas","Top Off. Skill Player":"HB (87)","Top Def. Skill Player":"MLB (85)","Avg. OL":73,"Avg. DL":71,"Avg. DB":70,"QB Archetype":"Improviser","QB Power/Accuracy":"86 / 82","HB Archetype":"Elusive","Best HB Speed":92,"Best WR Speed":91,"Best WR Catching":84,"Number of Seniors":16},{"University":"Ball State","Off. Rating":64,"Def. Rating":61,"Dynasty Point Budget (NIL)":900,"Pipeline Tier":"T3 & T2","Top Pipeline Region/State":"Indiana","Top Off. Skill Player":"WR (83)","Top Def. Skill Player":"S (82)","Avg. OL":66,"Avg. DL":67,"Avg. DB":65,"QB Archetype":"Field General","QB Power/Accuracy":"79 / 83","HB Archetype":"Power","Best HB Speed":88,"Best WR Speed":90,"Best WR Catching":82,"Number of Seniors":20},{"University":"Buffalo","Off. Rating":69,"Def. Rating":71,"Dynasty Point Budget (NIL)":870,"Pipeline Tier":"T2","Top Pipeline Region/State":"N.Y.","Top Off. Skill Player":"WR (92)","Top Def. Skill Player":"CB (90)","Avg. OL":80,"Avg. DL":79,"Avg. DB":81,"QB Archetype":"Strong Arm","QB Power/Accuracy":"94 / 84","HB Archetype":"Elusive","Best HB Speed":95,"Best WR Speed":97,"Best WR Catching":88,"Number of Seniors":10},{"University":"Kent State","Off. Rating":64,"Def. Rating":64,"Dynasty Point Budget (NIL)":605,"Pipeline Tier":"T2","Top Pipeline Region/State":"Ohio","Top Off. Skill Player":"HB (84)","Top Def. Skill Player":"MLB (83)","Avg. OL":68,"Avg. DL":68,"Avg. DB":67,"QB Archetype":"Improviser","QB Power/Accuracy":"84 / 80","HB Archetype":"Receiving","Best HB Speed":90,"Best WR Speed":91,"Best WR Catching":83,"Number of Seniors":17},{"University":"UMASS","Off. Rating":66,"Def. Rating":66,"Dynasty Point Budget (NIL)":980,"Pipeline Tier":"T2","Top Pipeline Region/State":"Tidewater","Top Off. Skill Player":"TE (86)","Top Def. Skill Player":"EDGE (86)","Avg. OL":74,"Avg. DL":74,"Avg. DB":74,"QB Archetype":"Field General","QB Power/Accuracy":"83 / 87","HB Archetype":"Power","Best HB Speed":88,"Best WR Speed":91,"Best WR Catching":86,"Number of Seniors":13},{"University":"Sacramento State","Off. Rating":61,"Def. Rating":61,"Dynasty Point Budget (NIL)":515,"Pipeline Tier":"T2","Top Pipeline Region/State":"California","Top Off. Skill Player":"WR (85)","Top Def. Skill Player":"CB (84)","Avg. OL":67,"Avg. DL":66,"Avg. DB":66,"QB Archetype":"Scrambler","QB Power/Accuracy":"86 / 78","HB Archetype":"Elusive","Best HB Speed":92,"Best WR Speed":94,"Best WR Catching":81,"Number of Seniors":9},{"University":"Delaware","Off. Rating":69,"Def. Rating":66,"Dynasty Point Budget (NIL)":515,"Pipeline Tier":"T1","Top Pipeline Region/State":"N.Y.","Top Off. Skill Player":"WR (90)","Top Def. Skill Player":"EDGE (87)","Avg. OL":76,"Avg. DL":75,"Avg. DB":73,"QB Archetype":"Strong Arm","QB Power/Accuracy":"93 / 81","HB Archetype":"Receiving","Best HB Speed":91,"Best WR Speed":95,"Best WR Catching":85,"Number of Seniors":8},{"University":"FIU","Off. Rating":69,"Def. Rating":69,"Dynasty Point Budget (NIL)":625,"Pipeline Tier":"T3 & T1","Top Pipeline Region/State":"Florida","Top Off. Skill Player":"HB (89)","Top Def. Skill Player":"S (88)","Avg. OL":75,"Avg. DL":76,"Avg. DB":78,"QB Archetype":"Improviser","QB Power/Accuracy":"90 / 84","HB Archetype":"Elusive","Best HB Speed":94,"Best WR Speed":95,"Best WR Catching":84,"Number of Seniors":12},{"University":"Jax State","Off. Rating":69,"Def. Rating":66,"Dynasty Point Budget (NIL)":650,"Pipeline Tier":"T2 & T1","Top Pipeline Region/State":"Alabama","Top Off. Skill Player":"HB (88)","Top Def. Skill Player":"MLB (86)","Avg. OL":77,"Avg. DL":75,"Avg. DB":72,"QB Archetype":"Scrambler","QB Power/Accuracy":"91 / 79","HB Archetype":"Power","Best HB Speed":92,"Best WR Speed":93,"Best WR Catching":83,"Number of Seniors":14},{"University":"Sam Houston","Off. Rating":69,"Def. Rating":66,"Dynasty Point Budget (NIL)":515,"Pipeline Tier":"T2 & T1","Top Pipeline Region/State":"Texas","Top Off. Skill Player":"WR (89)","Top Def. Skill Player":"CB (86)","Avg. OL":74,"Avg. DL":74,"Avg. DB":73,"QB Archetype":"Improviser","QB Power/Accuracy":"88 / 83","HB Archetype":"Receiving","Best HB Speed":91,"Best WR Speed":94,"Best WR Catching":85,"Number of Seniors":15},{"University":"New Mexico State","Off. Rating":66,"Def. Rating":69,"Dynasty Point Budget (NIL)":790,"Pipeline Tier":"T2","Top Pipeline Region/State":"Arizona","Top Off. Skill Player":"WR (88)","Top Def. Skill Player":"EDGE (88)","Avg. OL":75,"Avg. DL":78,"Avg. DB":77,"QB Archetype":"Strong Arm","QB Power/Accuracy":"95 / 80","HB Archetype":"Elusive","Best HB Speed":93,"Best WR Speed":96,"Best WR Catching":84,"Number of Seniors":11},{"University":"Missouri State","Off. Rating":66,"Def. Rating":64,"Dynasty Point Budget (NIL)":515,"Pipeline Tier":"T1","Top Pipeline Region/State":"Texas","Top Off. Skill Player":"HB (86)","Top Def. Skill Player":"DT (84)","Avg. OL":72,"Avg. DL":70,"Avg. DB":69,"QB Archetype":"Field General","QB Power/Accuracy":"82 / 86","HB Archetype":"Power","Best HB Speed":89,"Best WR Speed":90,"Best WR Catching":85,"Number of Seniors":19}];
 const COLS=["University","Off. Rating","Def. Rating","Dynasty Point Budget (NIL)","Pipeline Tier","Top Pipeline Region/State","Top Off. Skill Player","Top Def. Skill Player","Avg. OL","Avg. DL","Avg. DB","QB Archetype","QB Power/Accuracy","HB Archetype","Best HB Speed","Best WR Speed","Best WR Catching","Number of Seniors"];
@@ -207,55 +215,35 @@ const COLORS={"Hagen Sweazy":"#2F80ED","Boone Goldsmith":"#EB5757","Cody Morris"
 const EVENT_BAG=["Choose Player Lose 150 Dynasty Points","Choose Player Lose 150 Dynasty Points","Choose Player Lose 150 Dynasty Points","Choose Player Lose 150 Dynasty Points","Choose Player Lose 150 Dynasty Points","Choose Player Lose 150 Dynasty Points","Choose Player Lose 150 Dynasty Points","Choose Player Lose 150 Dynasty Points","Choose Player Lose 150 Dynasty Points","-100 Dynasty Points","-100 Dynasty Points","-100 Dynasty Points","Must Draft Now","Special Team Offer","Special Team Offer"];
 const SPECIAL_TEAM={"University":"North Dakota State","Off. Rating":"SPECIAL","Def. Rating":"SPECIAL","Dynasty Point Budget (NIL)":"SPECIAL","Pipeline Tier":"SPECIAL","Top Pipeline Region/State":"Dakotas","Top Off. Skill Player":"SPECIAL","Top Def. Skill Player":"SPECIAL","Avg. OL":"SPECIAL","Avg. DL":"SPECIAL","Avg. DB":"SPECIAL","QB Archetype":"SPECIAL","QB Power/Accuracy":"SPECIAL","HB Archetype":"SPECIAL","Best HB Speed":"SPECIAL","Best WR Speed":"SPECIAL","Best WR Catching":"SPECIAL","Number of Seniors":"SPECIAL"};
 
-// ── Sound engine (Web Audio API) ──
+// ── Sound engine ──
 const SFX=(()=>{
   let ctx;
   function gc(){if(!ctx)ctx=new(window.AudioContext||window.webkitAudioContext)();if(ctx.state==='suspended')ctx.resume();return ctx}
-  function tone(freq,dur,type,vol,delay){
-    try{const c=gc(),o=c.createOscillator(),g=c.createGain();
-    o.connect(g);g.connect(c.destination);o.type=type||'sine';o.frequency.value=freq;
-    const t=c.currentTime+(delay||0);g.gain.setValueAtTime(vol||.2,t);g.gain.exponentialRampToValueAtTime(.001,t+dur);
-    o.start(t);o.stop(t+dur+.02)}catch(e){}}
+  function tone(f,d,t,v,dl){try{const c=gc(),o=c.createOscillator(),g=c.createGain();o.connect(g);g.connect(c.destination);o.type=t||'sine';o.frequency.value=f;const ts=c.currentTime+(dl||0);g.gain.setValueAtTime(v||.2,ts);g.gain.exponentialRampToValueAtTime(.001,ts+d);o.start(ts);o.stop(ts+d+.02)}catch(e){}}
   return{
     reveal(){tone(523,.08,'triangle',.18);tone(659,.12,'triangle',.15,.07);tone(784,.2,'triangle',.12,.14)},
     event(){tone(180,.4,'sawtooth',.28);tone(140,.6,'sawtooth',.22,.3)},
-    draft(){[523,659,784,1047,1319].forEach((f,i)=>tone(f,.25,'triangle',.28,i*.09))},
+    draft(){[523,659,784,1047,1319].forEach((f,i)=>tone(f,.25,'triangle',.3,i*.09))},
     lock(){tone(330,.15,'square',.14);tone(247,.35,'square',.1,.12)},
     warn(){tone(880,.04,'square',.07)},
     penalty(){tone(220,.2,'sawtooth',.22);tone(180,.3,'sawtooth',.18,.18)},
+    yourTurn(){[392,523,659,784].forEach((f,i)=>tone(f,.2,'triangle',.25,i*.08))}
   }
 })();
 
 // ── Confetti ──
 function launchConfetti(color){
-  const canvas=document.getElementById('confetti');
-  canvas.style.display='block';
-  canvas.width=window.innerWidth;canvas.height=window.innerHeight;
-  const ctx=canvas.getContext('2d');
-  const pal=[color||'#ffcc45','#52d273','#ffffff','#56CCF2',color||'#BB6BD9'];
-  const ps=Array.from({length:200},()=>({
-    x:Math.random()*canvas.width,y:-20-Math.random()*120,
-    w:Math.random()*10+5,h:Math.random()*6+3,
-    color:pal[Math.floor(Math.random()*pal.length)],
-    vx:(Math.random()-.5)*5,vy:Math.random()*4+3,
-    ang:Math.random()*Math.PI*2,va:(Math.random()-.5)*.18
-  }));
-  let start=Date.now(),raf;
-  function draw(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-    let alive=false;
-    ps.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.ang+=p.va;p.vy+=.06;
-      if(p.y<canvas.height+20)alive=true;
-      ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.ang);
-      ctx.fillStyle=p.color+'cc';ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore()});
-    if(alive&&Date.now()-start<5000)raf=requestAnimationFrame(draw);
-    else{canvas.style.display='none';cancelAnimationFrame(raf)}
-  }
+  const cv=document.getElementById('confetti');cv.style.display='block';
+  cv.width=window.innerWidth;cv.height=window.innerHeight;
+  const ctx=cv.getContext('2d'),pal=[color,'#4ade80','#fff','#56CCF2'];
+  const ps=Array.from({length:200},()=>({x:Math.random()*cv.width,y:-20-Math.random()*100,w:Math.random()*10+4,h:Math.random()*6+3,color:pal[Math.floor(Math.random()*pal.length)],vx:(Math.random()-.5)*5,vy:Math.random()*4+3,ang:Math.random()*Math.PI*2,va:(Math.random()-.5)*.16}));
+  let st=Date.now(),raf;
+  function draw(){ctx.clearRect(0,0,cv.width,cv.height);let alive=false;ps.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.ang+=p.va;p.vy+=.06;if(p.y<cv.height+15)alive=true;ctx.save();ctx.translate(p.x,p.y);ctx.rotate(p.ang);ctx.fillStyle=p.color+'cc';ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);ctx.restore()});if(alive&&Date.now()-st<5000)raf=requestAnimationFrame(draw);else{cv.style.display='none';cancelAnimationFrame(raf)}}
   draw();
 }
 
 // ── State ──
-let state,modalTimer=null,prevPoints={},freshReveal=new Set();
+let state,modalTimer=null,prevPoints={},freshReveal=new Set(),lastTurnPlayer=null;
 
 function freshState(){
   const points={},eventMap={},used=new Set(),hiddenLocks={},draftedTeams={};
@@ -268,48 +256,78 @@ function freshState(){
   return{revealed:{},drafted:{},draftedBy:{},draftedTeams,hiddenLocks,foundLocks:{},eventMap,log:[],points,active:0,activePlayers:[...PLAYERS],history:[],specialAvailable:true,specialAdded:false,turnEndsAt:Date.now()+60000};
 }
 
-function load(){try{state=JSON.parse(localStorage.getItem('ncaaBetaV12Fixed'))||freshState()}catch(e){state=freshState()}prevPoints={...state.points};save()}
+function load(){try{state=JSON.parse(localStorage.getItem('ncaaDraftV2'))||freshState()}catch(e){state=freshState()}prevPoints={...state.points}}
 function save(){
   const v=JSON.stringify(state),t=Date.now();
-  localStorage.setItem('ncaaBetaV12Fixed',v);
+  localStorage.setItem('ncaaDraftV2',v);
   if(window._fbRef){window._lastSaveT=t;window._fbRef.set({v,t}).catch(()=>{})}
 }
 function snapshot(){state.history.push(JSON.stringify({...state,history:[]}));state.history=state.history.slice(-20)}
-function currentPlayer(){return state.activePlayers[state.active]||null}
-function viewPlayer(){return document.getElementById('viewPlayer').value}
-function canAct(){return viewPlayer()==='Duce'||viewPlayer()===currentPlayer()}
+function cp(){return state.activePlayers[state.active]||null}
+function canAct(){return IS_ADMIN||(MY_NAME!==null&&MY_NAME===cp())}
+function setMsg(t){document.getElementById('msg').textContent=t}
+function addLog(t){state.log.unshift(t);state.log=state.log.slice(0,50);document.getElementById('log').textContent=state.log[0]||'Ready.'}
+function showToast(t,d=2400){const el=document.getElementById('toast');el.textContent=t;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),d)}
 
-function addLog(t){state.log.unshift(t);state.log=state.log.slice(0,50);document.getElementById('log').textContent=state.log[0]||'Ready.';save()}
-function setMsg(t){document.getElementById('message').textContent=t}
-function showToast(t,dur=2400){const el=document.getElementById('toast');el.textContent=t;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),dur)}
-
-function setupSelects(){
-  const v=document.getElementById('viewPlayer'),a=document.getElementById('adminPlayer');
-  v.innerHTML='';a.innerHTML='';
-  PLAYERS.forEach(p=>{v.add(new Option(p,p));a.add(new Option(p,p))});
-  v.onchange=render;
+// ── Build header (once) ──
+function buildHeader(){
+  const h=document.getElementById('header');
+  let html=`<div class="hrow"><h1>NCAA Dynasty Draft Show</h1><div class="connDot" id="connDot"></div></div>`;
+  if(MY_NAME){
+    html+=`<div class="identity">Playing as: <span class="idName" style="color:${COLORS[MY_NAME]}">${MY_NAME}</span>`;
+    if(IS_ADMIN)html+=` <span class="badge">⚙ Commissioner</span>`;
+    html+=`</div>`;
+    if(IS_ADMIN)html+=`<button class="adminBtn" onclick="toggleAdmin()">⚙ Admin Panel</button>`;
+  }else{
+    html+=`<div class="identity"><span class="badge">Spectator</span></div>`;
+  }
+  h.innerHTML=html;
+  if(IS_ADMIN){const a=document.getElementById('adminPlayer');PLAYERS.forEach(p=>a.add(new Option(p,p)))}
 }
 
+function toggleAdmin(){document.getElementById('adminPanel').classList.toggle('hidden')}
+
+// ── YOUR TURN popup ──
+function checkYourTurn(){
+  const now=cp();
+  if(MY_NAME&&now===MY_NAME&&lastTurnPlayer!==MY_NAME){
+    showYourTurn();
+  }
+  lastTurnPlayer=now;
+}
+function showYourTurn(){
+  if(navigator.vibrate)navigator.vibrate([200,100,200]);
+  SFX.yourTurn();
+  const div=document.getElementById('ytDiv'),box=document.getElementById('ytBox');
+  document.getElementById('ytName').textContent=MY_NAME;
+  document.getElementById('ytName').style.color=COLORS[MY_NAME];
+  box.style.border=`2px solid ${COLORS[MY_NAME]}`;
+  box.style.background=`linear-gradient(180deg,${COLORS[MY_NAME]}22,#0d1828)`;
+  div.classList.remove('hidden');
+  div.onclick=()=>div.classList.add('hidden');
+  setTimeout(()=>div.classList.add('hidden'),4000);
+}
+
+// ── Render ──
 function renderScores(){
-  const bar=document.getElementById('scorebar');
-  bar.innerHTML='';
+  const bar=document.getElementById('sbar');bar.innerHTML='';
   PLAYERS.forEach(p=>{
-    const drafted=state.draftedTeams[p],isActive=p===currentPlayer();
-    const pts=state.points[p],prev=prevPoints[p]??pts,changed=pts!==prev;
-    const card=document.createElement('div');
-    card.className='playerCard'+(isActive?' active':'')+(drafted?' out':'');
-    card.style.borderColor=COLORS[p];
-    if(drafted)card.style.background=`linear-gradient(180deg,${COLORS[p]}33,#0d1e35)`;
-    card.innerHTML=`<div class="pName">${p.split(' ')[0]}</div>`+
-      (drafted?`<div class="pTeam" style="color:${COLORS[p]}">${drafted}</div>`
-        :`<div class="pPts${changed?(pts>prev?' up':' dn'):''}">${pts}</div>`)+
-      (ADV[p]&&!drafted?`<div class="pAdv">⭐ ADV</div>`:'');
-    bar.appendChild(card);
+    const drafted=state.draftedTeams[p],isAct=p===cp();
+    const pts=state.points[p],prev=prevPoints[p]??pts,chg=pts!==prev;
+    const c=document.createElement('div');
+    c.className='pc'+(isAct?' act':'');
+    c.style.borderColor=COLORS[p];
+    if(drafted)c.style.background=`linear-gradient(180deg,${COLORS[p]}33,#0d1e35)`;
+    c.innerHTML=`<div class="pn">${p.split(' ')[0]}</div>`+
+      (drafted?`<div class="pt" style="color:${COLORS[p]}">${drafted}</div>`
+        :`<div class="pp${chg?(pts>prev?' up':' dn'):''}">${pts}</div>`)+
+      (ADV[p]&&!drafted?`<div class="padv">⭐ ADV</div>`:'');
+    bar.appendChild(c);
   });
-  const cp=currentPlayer();
-  document.getElementById('turnName').textContent=cp||'Draft Complete!';
-  document.getElementById('turnName').style.color=cp?COLORS[cp]:'var(--gold)';
-  document.getElementById('turnHint').textContent=cp?(canAct()?'— YOUR TURN':'— view only'):'';
+  const p=cp();
+  document.getElementById('turnName').textContent=p||'Draft Complete!';
+  document.getElementById('turnName').style.color=p?COLORS[p]:'var(--gold)';
+  document.getElementById('turnHint').textContent=p?(canAct()?'— YOUR TURN':'— view only'):'';
   prevPoints={...state.points};
 }
 
@@ -317,39 +335,34 @@ function render(){
   renderScores();
   const table=document.getElementById('board');table.innerHTML='';
   const allTeams=state.specialAdded?[...TEAMS,SPECIAL_TEAM]:TEAMS;
-  // Header row
   const head=document.createElement('tr');
-  const dh=document.createElement('th');dh.textContent='Draft';dh.className='draftHead';head.appendChild(dh);
-  COLS.forEach((c,i)=>{const th=document.createElement('th');th.textContent=c;if(i===0)th.className='uniHead';head.appendChild(th)});
+  const dh=document.createElement('th');dh.textContent='Draft';dh.className='dh';head.appendChild(dh);
+  COLS.forEach((c,i)=>{const th=document.createElement('th');th.textContent=c;if(i===0)th.className='uh';head.appendChild(th)});
   table.appendChild(head);
-  // Data rows
   allTeams.forEach((team,r)=>{
     const tr=document.createElement('tr');
     if(state.drafted[r])tr.className='drafted';
     if(r>=TEAMS.length)tr.className+=' specialRow';
     if(state.draftedBy[r])tr.style.background=COLORS[state.draftedBy[r]]+'1a';
-    // Draft cell
-    const draftTd=document.createElement('td');draftTd.className='draftCell';
+    const dtd=document.createElement('td');dtd.className='dc';
     const btn=document.createElement('button');btn.className='draftBtn';
     btn.textContent=state.drafted[r]?'DRAFTED':'Draft Team';
-    btn.disabled=!!state.drafted[r]||!canAct()||!currentPlayer();
-    btn.onclick=()=>confirmDraft(r);draftTd.appendChild(btn);tr.appendChild(draftTd);
-    // Stat cells
+    btn.disabled=!!state.drafted[r]||!canAct()||!cp();
+    btn.onclick=()=>confirmDraft(r);dtd.appendChild(btn);tr.appendChild(dtd);
     COLS.forEach((col,c)=>{
-      const td=document.createElement('td'),id=r+'-'+c,isUni=c===0;
+      const td=document.createElement('td'),id=r+'-'+c,isU=c===0;
       const revealed=state.revealed[id]||state.drafted[r]||r>=TEAMS.length;
-      if(isUni)td.classList.add('uniCell');
+      if(isU)td.classList.add('uc');
       if(state.draftedBy[r])td.style.background=COLORS[state.draftedBy[r]]+'28';
       if(state.foundLocks[id]&&!revealed){
-        td.className+=' locked';td.innerHTML='🔒<small>UNLOCK<br>100 PTS</small>';td.onclick=()=>unlockTile(r,c);
-      }else if(isUni&&!revealed){
-        td.className+=' university';td.innerHTML='<b>LOCKED</b>';
+        td.className+=' lkd';td.innerHTML='🔒<small>UNLOCK<br>100 PTS</small>';td.onclick=()=>unlockTile(r,c);
+      }else if(isU&&!revealed){
+        td.className+=' unic';td.innerHTML='<b>LOCKED</b>';
       }else if(revealed){
-        td.className+=' revealed';if(freshReveal.has(id))td.classList.add('pop');
-        td.textContent=team[col];
+        td.className+=' rev';if(freshReveal.has(id))td.classList.add('pop');td.textContent=team[col];
       }else{
         const cost=COSTS[col];td.className+=' tile';
-        if(!canAct()||state.points[currentPlayer()]<cost)td.className+=' disabled';
+        if(!canAct()||state.points[cp()]<cost)td.className+=' dis';
         td.innerHTML=`<span>${cost}</span><small>PTS</small>`;td.onclick=()=>tileClick(r,c);
       }
       tr.appendChild(td);
@@ -359,30 +372,36 @@ function render(){
   freshReveal.clear();
 }
 
+// ── Actions ──
 function spend(p,cost,force=false){if(force){state.points[p]=Math.max(0,state.points[p]-cost);return true}if(state.points[p]<cost)return false;state.points[p]-=cost;return true}
 function anyAffordable(p){return Object.values(COSTS).some(v=>v&&state.points[p]>=v)}
 
 function tileClick(r,c){
   if(!canAct())return setMsg('Not your turn.');
-  const p=currentPlayer(),id=r+'-'+c,col=COLS[c],cost=COSTS[col];
+  const p=cp(),id=r+'-'+c,col=COLS[c],cost=COSTS[col];
   if(c===0||state.drafted[r])return;
   if(state.points[p]<cost)return setMsg('Not enough points for this tile.');
   snapshot();
-  if(state.hiddenLocks[id]){SFX.lock();delete state.hiddenLocks[id];state.foundLocks[id]=true;addLog(p+' found a locked tile!');setMsg('🔒 Locked tile found — turn ends.');endTurn();render();return}
+  if(state.hiddenLocks[id]){
+    SFX.lock();delete state.hiddenLocks[id];state.foundLocks[id]=true;
+    addLog(p+' found a locked tile!');setMsg('🔒 Locked tile! Turn ends.');
+    endTurn();render();return;
+  }
   SFX.reveal();spend(p,cost);freshReveal.add(id);revealTile(r,c,true);endTurn();
 }
 
 function unlockTile(r,c){
   if(!canAct())return setMsg('Not your turn.');
-  const p=currentPlayer(),id=r+'-'+c;
+  const p=cp(),id=r+'-'+c;
   if(state.points[p]<100)return setMsg('Need 100 points to unlock.');
-  snapshot();SFX.reveal();spend(p,100);delete state.foundLocks[id];addLog(p+' unlocked tile for 100 pts.');freshReveal.add(id);revealTile(r,c,true);endTurn();
+  snapshot();SFX.reveal();spend(p,100);delete state.foundLocks[id];
+  addLog(p+' unlocked tile for 100 pts.');freshReveal.add(id);revealTile(r,c,true);endTurn();
 }
 
 function revealTile(r,c,trigger){
   const id=r+'-'+c;state.revealed[id]=true;
-  addLog(`${currentPlayer()} revealed Team ${r+1} — ${COLS[c]}: ${TEAMS[r]?.[COLS[c]]??'?'}`);
-  if(trigger&&state.eventMap[id])handleEvent(state.eventMap[id],r,c);
+  addLog(`${cp()} revealed Team ${r+1} — ${COLS[c]}: ${TEAMS[r]?.[COLS[c]]??'?'}`);
+  if(trigger&&state.eventMap[id])handleEvent(state.eventMap[id]);
   save();render();
 }
 
@@ -391,159 +410,184 @@ function handleEvent(ev){
   if(ev==='Choose Player Lose 150 Dynasty Points')
     chooseTarget('Choose a player to lose 150 pts.',
       t=>{snapshot();spend(t,150,true);addLog(t+' lost 150 pts.');closeModal();render()},
-      ()=>{const arr=state.activePlayers.filter(x=>x!==currentPlayer());const t=arr[Math.floor(Math.random()*arr.length)]||currentPlayer();spend(t,150,true);addLog('Random: '+t+' lost 150.');closeModal();render()});
-  if(ev==='-100 Dynasty Points'){SFX.penalty();spend(currentPlayer(),100,true);showInfo('⚡ EVENT SPACE','−100 Dynasty Points for '+currentPlayer()+'!')}
+      ()=>{const arr=state.activePlayers.filter(x=>x!==cp());const t=arr[Math.floor(Math.random()*arr.length)]||cp();spend(t,150,true);addLog('Auto-target: '+t+' lost 150.');closeModal();render()});
+  if(ev==='-100 Dynasty Points'){SFX.penalty();spend(cp(),100,true);showInfo('⚡ EVENT',`-100 Dynasty Points for ${cp()}!`)}
   if(ev==='Must Draft Now')mustDraftNow();
   if(ev==='Special Team Offer')specialOffer();
 }
 
-function chooseTarget(prompt,cb,to){showTimed('⚡ CHOOSE TARGET',prompt,state.activePlayers.filter(p=>p!==currentPlayer()).map(p=>[p,'gold',()=>cb(p)]),to)}
-function mustDraftNow(){showTimed('🚨 MUST DRAFT NOW','You must draft any available team now.',TEAMS.map((t,i)=>state.drafted[i]?null:[`${t.University}`,'yes',()=>draftTeam(i)]).filter(Boolean),()=>{const av=TEAMS.map((_,i)=>i).filter(i=>!state.drafted[i]);draftTeam(av[Math.floor(Math.random()*av.length)])})}
-function specialOffer(){if(!state.specialAvailable)return;showTimed('⭐ SPECIAL TEAM OFFER','North Dakota State has entered the draft pool!',[['Draft North Dakota State','gold',draftSpecial],['Pass','no',()=>{state.specialAvailable=false;closeModal();render()}]],()=>{state.specialAvailable=false;addLog('Special team auto-passed.');closeModal();render()})}
+function chooseTarget(prompt,cb,to){
+  showTimed('⚡ CHOOSE TARGET',prompt,state.activePlayers.filter(p=>p!==cp()).map(p=>[p,'gold',()=>cb(p)]),to);
+}
+function mustDraftNow(){
+  showTimed('🚨 MUST DRAFT NOW','You must draft a team immediately — no passing.',
+    TEAMS.map((t,i)=>state.drafted[i]?null:[t.University,'yes',()=>{closeModal();snapshot();draftTeam(i)}]).filter(Boolean),
+    ()=>{const av=TEAMS.map((_,i)=>i).filter(i=>!state.drafted[i]);if(av.length){snapshot();draftTeam(av[Math.floor(Math.random()*av.length)])}});
+}
+function specialOffer(){
+  if(!state.specialAvailable){
+    showInfo('SPECIAL TEAM','SPECIAL TEAM ALREADY CLAIMED.');return;
+  }
+  showTimed('⭐ SPECIAL TEAM OFFER','A special team has entered the draft. Would you like to draft this team?',
+    [['Draft Special Team','gold',()=>{closeModal();snapshot();draftSpecial()}],
+     ['Pass','no',()=>{state.specialAvailable=false;addLog('Special team offer passed.');closeModal();save();render()}]],
+    ()=>{state.specialAvailable=false;addLog('Special team auto-passed.');closeModal();save();render()});
+}
 
 function confirmDraft(r){
   if(!canAct())return setMsg('Not your turn.');
-  const p=currentPlayer();
+  const p=cp();
   if(ADV[p]&&r<TEAMS.length)
-    showModal('ARE YOU SURE?',`You qualify for Huge Advantage Team (${ADV[p]}). Take it instead?`,
-      [['Draft This Team','yes',()=>{snapshot();draftTeam(r)}],['Take Advantage Team ⭐','gold',()=>{snapshot();draftHugeAdv()}],['Cancel','no',closeModal]]);
+    showModal('ARE YOU SURE?',`You qualify for a Huge Advantage Team (${ADV[p]}). Take it instead?`,
+      [['Draft This Team','yes',()=>{closeModal();snapshot();draftTeam(r)}],
+       ['Take Advantage Team ⭐','gold',()=>{closeModal();snapshot();draftHugeAdv()}],
+       ['Cancel','no',closeModal]]);
   else
     showModal('CONFIRM DRAFT',`Draft this team for ${p}?`,
-      [['Draft Team','yes',()=>{snapshot();draftTeam(r)}],['Cancel','no',closeModal]]);
+      [['Draft Team','yes',()=>{closeModal();snapshot();draftTeam(r)}],['Cancel','no',closeModal]]);
 }
 
 function draftTeam(r){
-  const p=currentPlayer();
+  const p=cp();
   for(let c=0;c<COLS.length;c++)state.revealed[r+'-'+c]=true;
   state.drafted[r]=true;state.draftedBy[r]=p;
   const name=r<TEAMS.length?TEAMS[r].University:SPECIAL_TEAM.University;
   state.draftedTeams[p]=name;addLog(`${p} drafted ${name}!`);
-  removePlayer(p);closeModal();save();showCelebration(p,name);
+  removePlayer(p);save();showCelebration(p,name);
+}
+
+function draftHugeAdv(){
+  const p=cp(),team=ADV[p];
+  state.draftedTeams[p]=team;addLog(`${p} CHOSE HUGE ADVANTAGE: ${team}`);
+  removePlayer(p);save();showCelebration(p,team+' ⭐');
+  showModal('HUGE ADVANTAGE TEAM',`<div class="advReveal">${p}<br>CHOSE A HUGE ADVANTAGE TEAM<br><br>${team}</div>`,
+    [['Continue','yes',()=>{closeModal();render()}]]);
+}
+
+function draftSpecial(){
+  const p=cp();
+  state.specialAvailable=false;state.specialAdded=true;
+  const r=TEAMS.length;
+  for(let c=0;c<COLS.length;c++)state.revealed[r+'-'+c]=true;
+  state.drafted[r]=true;state.draftedBy[r]=p;state.draftedTeams[p]='North Dakota State';
+  addLog(`${p} drafted North Dakota State!`);removePlayer(p);save();showCelebration(p,'North Dakota State ⭐');
+}
+
+function removePlayer(p){
+  const i=state.activePlayers.indexOf(p);
+  if(i>=0){state.activePlayers.splice(i,1);if(state.active>=state.activePlayers.length)state.active=0}
+  state.turnEndsAt=Date.now()+60000;
 }
 
 function showCelebration(player,team){
   SFX.draft();launchConfetti(COLORS[player]);
-  const box=document.getElementById('celebBox');
-  document.getElementById('celebWho').textContent=player;
-  document.getElementById('celebWho').style.color=COLORS[player];
-  document.getElementById('celebTeam').textContent=team;
-  document.getElementById('celebTeam').style.color=COLORS[player];
-  document.getElementById('celebPts').textContent=state.points[player]+' pts remaining';
-  box.style.border='2px solid '+COLORS[player];
-  box.style.background=`linear-gradient(180deg,${COLORS[player]}22,#0d1828)`;
-  const cel=document.getElementById('celebration');cel.classList.remove('hidden');
-  cel.onclick=()=>{cel.classList.add('hidden');render()};
-  setTimeout(()=>{if(!cel.classList.contains('hidden')){cel.classList.add('hidden');render()}},5000);
+  const div=document.getElementById('celDiv'),box=document.getElementById('celBox');
+  document.getElementById('celWho').textContent=player;document.getElementById('celWho').style.color=COLORS[player];
+  document.getElementById('celTeam').textContent=team;document.getElementById('celTeam').style.color=COLORS[player];
+  document.getElementById('celPts').textContent=state.points[player]+' pts remaining';
+  box.style.border=`2px solid ${COLORS[player]}`;box.style.background=`linear-gradient(180deg,${COLORS[player]}22,#0d1828)`;
+  div.classList.remove('hidden');div.onclick=()=>{div.classList.add('hidden');render()};
+  setTimeout(()=>{if(!div.classList.contains('hidden')){div.classList.add('hidden');render()}},5000);
 }
-
-function draftHugeAdv(){const p=currentPlayer(),team=ADV[p];state.draftedTeams[p]=team;addLog(`${p} CHOSE HUGE ADVANTAGE: ${team}`);removePlayer(p);closeModal();save();showCelebration(p,team+' ⭐')}
-function draftSpecial(){const p=currentPlayer();state.specialAvailable=false;state.specialAdded=true;const r=TEAMS.length;for(let c=0;c<COLS.length;c++)state.revealed[r+'-'+c]=true;state.drafted[r]=true;state.draftedBy[r]=p;state.draftedTeams[p]='North Dakota State';addLog(`${p} drafted North Dakota State!`);removePlayer(p);closeModal();save();showCelebration(p,'North Dakota State ⭐')}
-function removePlayer(p){const i=state.activePlayers.indexOf(p);if(i>=0){state.activePlayers.splice(i,1);if(state.active>=state.activePlayers.length)state.active=0}state.turnEndsAt=Date.now()+60000}
 
 function endTurn(){
   if(state.activePlayers.length){
-    state.active=(state.active+1)%state.activePlayers.length;state.turnEndsAt=Date.now()+60000;
-    const cp=currentPlayer();
-    if(!anyAffordable(cp)){showToast(cp.split(' ')[0]+' must draft — no affordable tiles!');setMsg(cp+' must draft.')}
+    state.active=(state.active+1)%state.activePlayers.length;
+    state.turnEndsAt=Date.now()+60000;
+    const p=cp();
+    if(p&&!anyAffordable(p)){setMsg(p+' must draft — no affordable tiles.');showToast(p.split(' ')[0]+' must draft!')}
   }
-  save();render();
+  save();checkYourTurn();render();
 }
 
 function timeoutTurn(){
-  const p=currentPlayer();if(!p)return;snapshot();
-  let cand=[];TEAMS.forEach((_,r)=>{if(!state.drafted[r])COLS.forEach((col,c)=>{const id=r+'-'+c;if(c>0&&!state.revealed[id]&&!state.foundLocks[id])cand.push([r,c])})});
+  const p=cp();if(!p)return;snapshot();
+  let cand=[];
+  TEAMS.forEach((_,r)=>{if(!state.drafted[r])COLS.forEach((col,c)=>{const id=r+'-'+c;if(c>0&&!state.revealed[id]&&!state.foundLocks[id])cand.push([r,c])})});
   if(!cand.length)return endTurn();
   const[r,c]=cand[Math.floor(Math.random()*cand.length)],id=r+'-'+c;
-  if(state.hiddenLocks[id]){delete state.hiddenLocks[id];state.foundLocks[id]=true;addLog('Timer: random tile was locked.');endTurn();return}
+  if(state.hiddenLocks[id]){delete state.hiddenLocks[id];state.foundLocks[id]=true;addLog('Timer expired: tile was locked.');endTurn();return}
   SFX.reveal();spend(p,COSTS[COLS[c]],true);freshReveal.add(id);revealTile(r,c,true);endTurn();
 }
 
-function showModal(title,text,buttons){clearEventTimer();document.getElementById('modalTitle').textContent=title;document.getElementById('modalText').innerHTML=text;const a=document.getElementById('modalActions');a.innerHTML='';buttons.forEach(([l,cls,fn])=>{const b=document.createElement('button');b.textContent=l;b.className=cls;b.onclick=fn;a.appendChild(b)});document.getElementById('modal').classList.remove('hidden')}
-function showTimed(title,text,buttons,to){let left=25;showModal(title,text+`<br><br><b id="etxt" style="color:var(--gold)">${left}s</b>`,buttons);modalTimer=setInterval(()=>{left--;const e=document.getElementById('etxt');if(e)e.textContent=left+'s';if(left<=0){clearEventTimer();to()}},1000)}
+// ── Modals ──
+function showModal(title,text,buttons){
+  clearEventTimer();
+  document.getElementById('modalTitle').textContent=title;
+  document.getElementById('modalText').innerHTML=text;
+  const a=document.getElementById('modalActs');a.innerHTML='';
+  buttons.forEach(([l,cls,fn])=>{const b=document.createElement('button');b.textContent=l;b.className=cls;b.onclick=fn;a.appendChild(b)});
+  document.getElementById('modal').classList.remove('hidden');
+}
+function showTimed(title,text,buttons,to){
+  let left=25;
+  showModal(title,text+`<br><br><b id="etxt" style="color:var(--gold)">${left}s remaining</b>`,buttons);
+  modalTimer=setInterval(()=>{left--;const e=document.getElementById('etxt');if(e)e.textContent=left+'s remaining';if(left<=0){clearEventTimer();to()}},1000);
+}
 function clearEventTimer(){if(modalTimer){clearInterval(modalTimer);modalTimer=null}}
 function closeModal(){clearEventTimer();document.getElementById('modal').classList.add('hidden')}
 function showInfo(t,x){showModal(t,x,[['OK','yes',closeModal]])}
-function toggleAdmin(){document.getElementById('adminPanel').classList.toggle('hidden')}
-function adminSetActive(){const p=document.getElementById('adminPlayer').value,i=state.activePlayers.indexOf(p);if(i>=0){snapshot();state.active=i;state.turnEndsAt=Date.now()+60000;save();render()}}
-function nextTurn(){snapshot();endTurn()}
-function undoLast(){if(!state.history.length)return setMsg('Nothing to undo.');const h=state.history.pop(),old=state.history;state=JSON.parse(h);state.history=old;prevPoints={...state.points};save();render();showToast('↩ Undo applied')}
-function resetBoardConfirm(){if(confirm('Reset the full board?')){state=freshState();prevPoints={...state.points};save();render()}}
 
+// ── Admin ──
+function adminSetActive(){
+  const p=document.getElementById('adminPlayer').value,i=state.activePlayers.indexOf(p);
+  if(i>=0){snapshot();state.active=i;state.turnEndsAt=Date.now()+60000;save();render()}
+}
+function doNextTurn(){snapshot();endTurn()}
+function undoLast(){
+  if(!state.history.length)return setMsg('Nothing to undo.');
+  const h=state.history.pop(),old=state.history;
+  state=JSON.parse(h);state.history=old;prevPoints={...state.points};save();render();showToast('↩ Undo applied');
+}
+function resetBoardConfirm(){
+  if(confirm('Reset the full board? This cannot be undone.')){state=freshState();prevPoints={...state.points};save();render()}
+}
+
+// ── Timer ──
 function updateTimer(){
-  const p=currentPlayer(),el=document.getElementById('timer'),bar=document.getElementById('tpBar');
-  if(!p){el.textContent='DONE';el.className='timer';if(bar)bar.style.width='0%';return}
+  const p=cp(),el=document.getElementById('clock'),bar=document.getElementById('tpf');
+  if(!p){el.textContent='DONE';el.className='clock';if(bar)bar.style.width='0%';return}
   const left=Math.max(0,Math.ceil((state.turnEndsAt-Date.now())/1000));
   el.textContent='0:'+String(left).padStart(2,'0');
-  el.className='timer'+(left<=10?' danger':left<=20?' warn':'');
+  el.className='clock'+(left<=10?' danger':left<=20?' warn':'');
   if(bar){bar.style.width=(left/60*100)+'%';bar.style.background=left<=10?'var(--red)':left<=20?'var(--gold)':'var(--green)'}
   if(left<=10&&left>0&&left%2===0)SFX.warn();
   if(left<=0){state.turnEndsAt=Date.now()+999999;timeoutTurn()}
 }
 
-// ── Player ID from URL ──
-window.PLAYER_IDS={"hagen":"Hagen Sweazy","boone":"Boone Goldsmith","cody":"Cody Morris","duce":"Duce True","connor":"Connor Givhan","jiffy":"Jordan Walker (Jiffy)","jacob":"Jacob Nichols","zach":"Zach Harp"};
-(function(){
-  const slug=new URLSearchParams(window.location.search).get('player');
-  const mapped=window.PLAYER_IDS[slug];if(!mapped)return;
-  function apply(){const sel=document.getElementById('viewPlayer');if(!sel)return;for(const o of sel.options){if(o.value===mapped){sel.value=o.value;sel.dispatchEvent(new Event('change'));break}}}
-  setTimeout(apply,100);setTimeout(apply,600);
-})();
+// ── Init ──
+buildHeader();
 </script>
 
-<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
 <script>
 (function(){
   const cfg={apiKey:"AIzaSyBW69cWLtIrFCwkhzoBfmUpjMhDw4cO8kA",authDomain:"ncaa-team-draft.firebaseapp.com",databaseURL:"https://ncaa-team-draft-default-rtdb.firebaseio.com",projectId:"ncaa-team-draft",storageBucket:"ncaa-team-draft.firebasestorage.app",messagingSenderId:"634745311809",appId:"1:634745311809:web:83ab53e82921b31569ecc0"};
-  const dot=document.getElementById('connDot');
-  function startLocal(){load();setupSelects();render();setInterval(updateTimer,500);updateTimer()}
+  const dot=()=>document.getElementById('connDot');
+  function startLocal(){load();render();checkYourTurn();setInterval(updateTimer,500);updateTimer()}
   try{
     if(!firebase.apps.length)firebase.initializeApp(cfg);
-    const db=firebase.database();
-    const ref=db.ref('games/main/state');
+    const db=firebase.database(),ref=db.ref('game/state');
     window._fbRef=ref;
-    // Connection indicator
-    db.ref('.info/connected').on('value',s=>{
-      if(dot)dot.className='conn-dot '+(s.val()?'online':'offline');
-    });
-    // Load latest state from Firebase first, then start
+    db.ref('.info/connected').on('value',s=>{const d=dot();if(d)d.className='connDot '+(s.val()?'on':'off')});
     ref.get().then(snap=>{
       const d=snap.val();
-      if(d&&d.v){
-        try{
-          const remote=JSON.parse(d.v);
-          localStorage.setItem('ncaaBetaV12Fixed',d.v);
-          state=remote;
-        }catch(e){}
-      }
+      if(d&&d.v){try{state=JSON.parse(d.v);localStorage.setItem('ncaaDraftV2',d.v)}catch(e){}}
       startLocal();
-      // Now listen for live changes from other devices
       ref.on('value',snap=>{
-        const d=snap.val();
-        if(!d||!d.v)return;
-        // Skip if we wrote this (our save() just pushed it)
-        if(d.t&&window._lastSaveT&&d.t===window._lastSaveT)return;
-        const local=localStorage.getItem('ncaaBetaV12Fixed');
-        if(d.v===local)return;
-        try{
-          state=JSON.parse(d.v);
-          prevPoints={...state.points};
-          localStorage.setItem('ncaaBetaV12Fixed',d.v);
-          render();
-          showToast('🔄 Live update');
-        }catch(e){}
+        const d=snap.val();if(!d||!d.v)return;
+        if(d.t&&window._lastSaveT&&Math.abs(d.t-window._lastSaveT)<500)return;
+        const prevCp=state?cp():null;
+        try{state=JSON.parse(d.v);prevPoints={...state.points};localStorage.setItem('ncaaDraftV2',d.v)}catch(e){return}
+        const newCp=cp();
+        if(MY_NAME&&newCp===MY_NAME&&prevCp!==MY_NAME)showYourTurn();
+        lastTurnPlayer=newCp;
+        render();showToast('🔄 Synced');
       });
     }).catch(()=>startLocal());
-    window.NCAA_LIVE_RESET=function(){
-      if(!confirm('Reset live Firebase state?'))return;
-      db.ref('games/main').remove().then(()=>location.reload());
-    };
-  }catch(e){
-    if(dot)dot.className='conn-dot offline';
-    startLocal();
-    console.error('Firebase:',e);
-  }
+    window.NCAA_RESET=function(){if(!confirm('Reset live state?'))return;db.ref('game').remove().then(()=>location.reload())};
+  }catch(e){const d=dot();if(d)d.className='connDot off';startLocal();console.error('Firebase:',e)}
 })();
 </script>
 </body>
