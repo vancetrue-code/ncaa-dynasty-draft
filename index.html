@@ -210,7 +210,7 @@ const COSTS={"University":null,"Off. Rating":40,"Def. Rating":40,"Dynasty Point 
 const PLAYERS=["Hagen Sweazy","Boone Goldsmith","Cody Morris","Duce True","Connor Givhan","Jordan Walker (Jiffy)","Jacob Nichols","Zach Harp"];
 const ADV={"Connor Givhan":"Tulsa","Jordan Walker (Jiffy)":"Memphis","Jacob Nichols":"Rice","Zach Harp":"Tulane"};
 const COLORS={"Hagen Sweazy":"#2F80ED","Boone Goldsmith":"#EB5757","Cody Morris":"#F2994A","Duce True":"#27AE60","Connor Givhan":"#9B51E0","Jordan Walker (Jiffy)":"#F2C94C","Jacob Nichols":"#56CCF2","Zach Harp":"#BB6BD9"};
-const EVENT_BAG=["Choose Player Lose 150 Dynasty Points","Choose Player Lose 150 Dynasty Points","Choose Player Lose 150 Dynasty Points","Choose Player Lose 150 Dynasty Points","Choose Player Lose 150 Dynasty Points","Choose Player Lose 150 Dynasty Points","Choose Player Lose 150 Dynasty Points","Choose Player Lose 150 Dynasty Points","Choose Player Lose 150 Dynasty Points","-100 Dynasty Points","-100 Dynasty Points","-100 Dynasty Points","Must Draft Now","Special Team Offer","Special Team Offer"];
+const EVENT_BAG=[...Array(20).fill("Choose Player Lose 50 Dynasty Points"),"Choose Player Lose 150 Dynasty Points","-100 Dynasty Points","-100 Dynasty Points","-100 Dynasty Points","Must Draft Now","Special Team Offer","Special Team Offer"];
 const SPECIAL_TEAM={"University":"North Dakota State","Off. Rating":"SPECIAL","Def. Rating":"SPECIAL","Dynasty Point Budget (NIL)":"SPECIAL","Pipeline Tier":"SPECIAL","Top Pipeline Region/State":"Dakotas","Top Off. Skill Player":"SPECIAL","Top Def. Skill Player":"SPECIAL","Avg. OL":"SPECIAL","Avg. DL":"SPECIAL","Avg. DB":"SPECIAL","QB Archetype":"SPECIAL","QB Power/Accuracy":"SPECIAL","HB Archetype":"SPECIAL","Best HB Speed":"SPECIAL","Best WR Speed":"SPECIAL","Best WR Catching":"SPECIAL","Number of Seniors":"SPECIAL"};
 
 // ── Sound engine ──
@@ -406,10 +406,12 @@ function revealTile(r,c,trigger){
 
 function handleEvent(ev){
   addLog('EVENT: '+ev);SFX.event();
-  if(ev==='Choose Player Lose 150 Dynasty Points')
-    chooseTarget('Choose a player to lose 150 pts.',
-      t=>{snapshot();spend(t,150,true);if(!anyAffordable(t))state.mustDraft[t]=true;addLog(t+' lost 150 pts.'+(state.mustDraft[t]?' Must draft!':''));closeModal();render()},
-      ()=>{const arr=state.activePlayers.filter(x=>x!==cp());const t=arr[Math.floor(Math.random()*arr.length)]||cp();spend(t,150,true);if(!anyAffordable(t))state.mustDraft[t]=true;addLog('Auto: '+t+' lost 150 pts.'+(state.mustDraft[t]?' Must draft!':''));closeModal();render()});
+  if(ev==='Choose Player Lose 50 Dynasty Points'||ev==='Choose Player Lose 150 Dynasty Points'){
+    const amt=ev.includes('150')?150:50;
+    chooseTarget(`Choose a player to lose ${amt} pts.`,
+      t=>{snapshot();spend(t,amt,true);if(!anyAffordable(t))state.mustDraft[t]=true;addLog(t+` lost ${amt} pts.`+(state.mustDraft[t]?' Must draft!':''));closeModal();render()},
+      ()=>{const arr=state.activePlayers.filter(x=>x!==cp());const t=arr[Math.floor(Math.random()*arr.length)]||cp();spend(t,amt,true);if(!anyAffordable(t))state.mustDraft[t]=true;addLog(`Auto: ${t} lost ${amt} pts.`+(state.mustDraft[t]?' Must draft!':''));closeModal();render()});
+  }
   if(ev==='-100 Dynasty Points'){SFX.penalty();const _p=cp();spend(_p,100,true);if(!anyAffordable(_p))state.mustDraft[_p]=true;showInfo('⚡ EVENT',`-100 Dynasty Points for ${_p}!${state.mustDraft[_p]?' Must draft next turn.':''}`)}
   if(ev==='Must Draft Now')mustDraftNow();
   if(ev==='Special Team Offer')specialOffer();
