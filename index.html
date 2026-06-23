@@ -198,12 +198,27 @@ td.dc{background:#0b1a2e}
 
 <div id="toast"></div>
 
+<div id="draftVideo" style="display:none;position:fixed;inset:0;z-index:200;background:#000;flex-direction:column;align-items:center;justify-content:center">
+  <video id="draftVid" playsinline style="width:100%;height:100%;object-fit:cover;position:absolute;inset:0"></video>
+  <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:80px;pointer-events:none">
+    <div id="draftVidWho" style="font-size:13px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;opacity:.85;text-shadow:0 2px 8px rgba(0,0,0,.8)"></div>
+    <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;opacity:.6;margin:6px 0;text-shadow:0 2px 8px rgba(0,0,0,.8)">DRAFTED</div>
+    <div id="draftVidTeam" style="font-size:38px;font-weight:900;line-height:1.1;text-shadow:0 3px 16px rgba(0,0,0,.9)"></div>
+  </div>
+  <button onclick="closeDraftVideo()" style="position:absolute;top:18px;right:18px;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:20px;padding:6px 14px;font-size:12px;font-weight:700;cursor:pointer;z-index:10">Skip</button>
+</div>
+
 <script>
 // ── Identity from URL (no dropdown) ──
 const PLAYER_IDS={hagen:"Hagen Sweazy",boone:"Boone Goldsmith",cody:"Cody Morris",duce:"Duce True",connor:"Connor Givhan",jiffy:"Jordan Walker (Jiffy)",jacob:"Jacob Nichols",zach:"Zach Harp"};
 const _p=new URLSearchParams(window.location.search);
 const MY_NAME=_p.get('player')?PLAYER_IDS[_p.get('player')]||null:null;
 const IS_ADMIN=_p.get('player')==='duce'&&_p.get('admin')==='true';
+
+// ── Team videos (add more as you get them) ──
+const TEAM_VIDEOS={
+  "UL Monroe":"vid-ulmonroe.mp4"
+};
 
 // ── Game data ──
 const TEAMS=[{"University":"Akron","Off. Rating":61,"Def. Rating":61,"Dynasty Point Budget (NIL)":605,"Pipeline Tier":"T3 & T1","Top Pipeline Region/State":"Ohio","Top Off. Skill Player":"WR (84)","Top Def. Skill Player":"MLB (82)","Avg. OL":67,"Avg. DL":68,"Avg. DB":66,"QB Archetype":"Field General","QB Power/Accuracy":"82 / 84","HB Archetype":"Elusive","Best HB Speed":91,"Best WR Speed":93,"Best WR Catching":84,"Number of Seniors":14},{"University":"Kennesaw State","Off. Rating":66,"Def. Rating":66,"Dynasty Point Budget (NIL)":515,"Pipeline Tier":"T2 & T1","Top Pipeline Region/State":"Georgia","Top Off. Skill Player":"HB (86)","Top Def. Skill Player":"EDGE (84)","Avg. OL":71,"Avg. DL":70,"Avg. DB":69,"QB Archetype":"Improviser","QB Power/Accuracy":"87 / 80","HB Archetype":"Power","Best HB Speed":89,"Best WR Speed":92,"Best WR Catching":82,"Number of Seniors":12},{"University":"Georgia State","Off. Rating":66,"Def. Rating":64,"Dynasty Point Budget (NIL)":680,"Pipeline Tier":"T2","Top Pipeline Region/State":"S. Carolina","Top Off. Skill Player":"WR (87)","Top Def. Skill Player":"CB (85)","Avg. OL":72,"Avg. DL":69,"Avg. DB":71,"QB Archetype":"Scrambler","QB Power/Accuracy":"89 / 78","HB Archetype":"Receiving","Best HB Speed":90,"Best WR Speed":95,"Best WR Catching":80,"Number of Seniors":15},{"University":"Old Dominion","Off. Rating":64,"Def. Rating":64,"Dynasty Point Budget (NIL)":705,"Pipeline Tier":"T4 & T2","Top Pipeline Region/State":"Tidewater","Top Off. Skill Player":"TE (85)","Top Def. Skill Player":"DT (84)","Avg. OL":74,"Avg. DL":72,"Avg. DB":70,"QB Archetype":"Field General","QB Power/Accuracy":"81 / 88","HB Archetype":"Power","Best HB Speed":87,"Best WR Speed":90,"Best WR Catching":86,"Number of Seniors":18},{"University":"South Alabama","Off. Rating":69,"Def. Rating":71,"Dynasty Point Budget (NIL)":570,"Pipeline Tier":"T3, T2, T1","Top Pipeline Region/State":"Alabama","Top Off. Skill Player":"WR (91)","Top Def. Skill Player":"EDGE (89)","Avg. OL":78,"Avg. DL":80,"Avg. DB":79,"QB Archetype":"Scrambler","QB Power/Accuracy":"92 / 82","HB Archetype":"Elusive","Best HB Speed":94,"Best WR Speed":96,"Best WR Catching":87,"Number of Seniors":11},{"University":"UL Monroe","Off. Rating":66,"Def. Rating":66,"Dynasty Point Budget (NIL)":660,"Pipeline Tier":"T2","Top Pipeline Region/State":"Texas","Top Off. Skill Player":"HB (87)","Top Def. Skill Player":"MLB (85)","Avg. OL":73,"Avg. DL":71,"Avg. DB":70,"QB Archetype":"Improviser","QB Power/Accuracy":"86 / 82","HB Archetype":"Elusive","Best HB Speed":92,"Best WR Speed":91,"Best WR Catching":84,"Number of Seniors":16},{"University":"Ball State","Off. Rating":64,"Def. Rating":61,"Dynasty Point Budget (NIL)":900,"Pipeline Tier":"T3 & T2","Top Pipeline Region/State":"Indiana","Top Off. Skill Player":"WR (83)","Top Def. Skill Player":"S (82)","Avg. OL":66,"Avg. DL":67,"Avg. DB":65,"QB Archetype":"Field General","QB Power/Accuracy":"79 / 83","HB Archetype":"Power","Best HB Speed":88,"Best WR Speed":90,"Best WR Catching":82,"Number of Seniors":20},{"University":"Buffalo","Off. Rating":69,"Def. Rating":71,"Dynasty Point Budget (NIL)":870,"Pipeline Tier":"T2","Top Pipeline Region/State":"N.Y.","Top Off. Skill Player":"WR (92)","Top Def. Skill Player":"CB (90)","Avg. OL":80,"Avg. DL":79,"Avg. DB":81,"QB Archetype":"Strong Arm","QB Power/Accuracy":"94 / 84","HB Archetype":"Elusive","Best HB Speed":95,"Best WR Speed":97,"Best WR Catching":88,"Number of Seniors":10},{"University":"Kent State","Off. Rating":64,"Def. Rating":64,"Dynasty Point Budget (NIL)":605,"Pipeline Tier":"T2","Top Pipeline Region/State":"Ohio","Top Off. Skill Player":"HB (84)","Top Def. Skill Player":"MLB (83)","Avg. OL":68,"Avg. DL":68,"Avg. DB":67,"QB Archetype":"Improviser","QB Power/Accuracy":"84 / 80","HB Archetype":"Receiving","Best HB Speed":90,"Best WR Speed":91,"Best WR Catching":83,"Number of Seniors":17},{"University":"UMASS","Off. Rating":66,"Def. Rating":66,"Dynasty Point Budget (NIL)":980,"Pipeline Tier":"T2","Top Pipeline Region/State":"Tidewater","Top Off. Skill Player":"TE (86)","Top Def. Skill Player":"EDGE (86)","Avg. OL":74,"Avg. DL":74,"Avg. DB":74,"QB Archetype":"Field General","QB Power/Accuracy":"83 / 87","HB Archetype":"Power","Best HB Speed":88,"Best WR Speed":91,"Best WR Catching":86,"Number of Seniors":13},{"University":"Sacramento State","Off. Rating":61,"Def. Rating":61,"Dynasty Point Budget (NIL)":515,"Pipeline Tier":"T2","Top Pipeline Region/State":"California","Top Off. Skill Player":"WR (85)","Top Def. Skill Player":"CB (84)","Avg. OL":67,"Avg. DL":66,"Avg. DB":66,"QB Archetype":"Scrambler","QB Power/Accuracy":"86 / 78","HB Archetype":"Elusive","Best HB Speed":92,"Best WR Speed":94,"Best WR Catching":81,"Number of Seniors":9},{"University":"Delaware","Off. Rating":69,"Def. Rating":66,"Dynasty Point Budget (NIL)":515,"Pipeline Tier":"T1","Top Pipeline Region/State":"N.Y.","Top Off. Skill Player":"WR (90)","Top Def. Skill Player":"EDGE (87)","Avg. OL":76,"Avg. DL":75,"Avg. DB":73,"QB Archetype":"Strong Arm","QB Power/Accuracy":"93 / 81","HB Archetype":"Receiving","Best HB Speed":91,"Best WR Speed":95,"Best WR Catching":85,"Number of Seniors":8},{"University":"FIU","Off. Rating":69,"Def. Rating":69,"Dynasty Point Budget (NIL)":625,"Pipeline Tier":"T3 & T1","Top Pipeline Region/State":"Florida","Top Off. Skill Player":"HB (89)","Top Def. Skill Player":"S (88)","Avg. OL":75,"Avg. DL":76,"Avg. DB":78,"QB Archetype":"Improviser","QB Power/Accuracy":"90 / 84","HB Archetype":"Elusive","Best HB Speed":94,"Best WR Speed":95,"Best WR Catching":84,"Number of Seniors":12},{"University":"Jax State","Off. Rating":69,"Def. Rating":66,"Dynasty Point Budget (NIL)":650,"Pipeline Tier":"T2 & T1","Top Pipeline Region/State":"Alabama","Top Off. Skill Player":"HB (88)","Top Def. Skill Player":"MLB (86)","Avg. OL":77,"Avg. DL":75,"Avg. DB":72,"QB Archetype":"Scrambler","QB Power/Accuracy":"91 / 79","HB Archetype":"Power","Best HB Speed":92,"Best WR Speed":93,"Best WR Catching":83,"Number of Seniors":14},{"University":"Sam Houston","Off. Rating":69,"Def. Rating":66,"Dynasty Point Budget (NIL)":515,"Pipeline Tier":"T2 & T1","Top Pipeline Region/State":"Texas","Top Off. Skill Player":"WR (89)","Top Def. Skill Player":"CB (86)","Avg. OL":74,"Avg. DL":74,"Avg. DB":73,"QB Archetype":"Improviser","QB Power/Accuracy":"88 / 83","HB Archetype":"Receiving","Best HB Speed":91,"Best WR Speed":94,"Best WR Catching":85,"Number of Seniors":15},{"University":"New Mexico State","Off. Rating":66,"Def. Rating":69,"Dynasty Point Budget (NIL)":790,"Pipeline Tier":"T2","Top Pipeline Region/State":"Arizona","Top Off. Skill Player":"WR (88)","Top Def. Skill Player":"EDGE (88)","Avg. OL":75,"Avg. DL":78,"Avg. DB":77,"QB Archetype":"Strong Arm","QB Power/Accuracy":"95 / 80","HB Archetype":"Elusive","Best HB Speed":93,"Best WR Speed":96,"Best WR Catching":84,"Number of Seniors":11},{"University":"Missouri State","Off. Rating":66,"Def. Rating":64,"Dynasty Point Budget (NIL)":515,"Pipeline Tier":"T1","Top Pipeline Region/State":"Texas","Top Off. Skill Player":"HB (86)","Top Def. Skill Player":"DT (84)","Avg. OL":72,"Avg. DL":70,"Avg. DB":69,"QB Archetype":"Field General","QB Power/Accuracy":"82 / 86","HB Archetype":"Power","Best HB Speed":89,"Best WR Speed":90,"Best WR Catching":85,"Number of Seniors":19}];
@@ -486,6 +501,7 @@ function removePlayer(p){
 }
 
 function showCelebration(player,team){
+  broadcastDraftVideo(player,team);
   SFX.draft();launchConfetti(COLORS[player]);
   const div=document.getElementById('celDiv'),box=document.getElementById('celBox');
   document.getElementById('celWho').textContent=player;document.getElementById('celWho').style.color=COLORS[player];
@@ -569,6 +585,32 @@ function updateTimer(){
   if(left<=0){state.turnEndsAt=Date.now()+999999;timeoutTurn()}
 }
 
+// ── Draft video ──
+function playDraftVideo(player,team,videoSrc){
+  const wrap=document.getElementById('draftVideo');
+  const vid=document.getElementById('draftVid');
+  document.getElementById('draftVidWho').textContent=player;
+  document.getElementById('draftVidWho').style.color=COLORS[player]||'#fff';
+  document.getElementById('draftVidTeam').textContent=team;
+  document.getElementById('draftVidTeam').style.color=COLORS[player]||'#fff';
+  vid.src=videoSrc;
+  wrap.style.display='flex';
+  vid.play().catch(()=>{});
+  vid.onended=()=>closeDraftVideo();
+}
+function closeDraftVideo(){
+  const wrap=document.getElementById('draftVideo'),vid=document.getElementById('draftVid');
+  vid.pause();vid.src='';
+  wrap.style.display='none';
+  render();
+}
+function broadcastDraftVideo(player,team){
+  const src=TEAM_VIDEOS[team];
+  if(!src)return;
+  if(window._fbVideoRef)window._fbVideoRef.set({player,team,src,t:Date.now()}).catch(()=>{});
+  playDraftVideo(player,team,src);
+}
+
 // ── Music ──
 function startMusic(){
   const bgm=document.getElementById('bgm');
@@ -600,6 +642,15 @@ buildHeader();
     if(!firebase.apps.length)firebase.initializeApp(cfg);
     const db=firebase.database(),ref=db.ref('game/state');
     window._fbRef=ref;
+    const vidRef=db.ref('game/video');
+    window._fbVideoRef=vidRef;
+    vidRef.on('value',snap=>{
+      const d=snap.val();
+      if(!d||!d.src||!d.t)return;
+      if(window._lastVidT&&d.t===window._lastVidT)return;
+      window._lastVidT=d.t;
+      playDraftVideo(d.player,d.team,d.src);
+    });
     db.ref('.info/connected').on('value',s=>{const d=dot();if(d)d.className='connDot '+(s.val()?'on':'off')});
     ref.get().then(snap=>{
       const d=snap.val();
