@@ -573,7 +573,7 @@ function updateTimer(){
 function startMusic(){
   const bgm=document.getElementById('bgm');
   if(!bgm||!bgm.paused)return;
-  bgm.volume=0.06;
+  bgm.volume=0.015;
   bgm.play().catch(()=>{});
 }
 document.addEventListener('touchstart',startMusic,{once:true});
