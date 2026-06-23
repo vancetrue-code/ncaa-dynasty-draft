@@ -270,7 +270,7 @@ function freshState(){
   let hi=0,hv=-1;TEAMS.forEach((t,i)=>{if(t["Dynasty Point Budget (NIL)"]>hv){hv=t["Dynasty Point Budget (NIL)"];hi=i}});
   hiddenLocks[hi+'-'+COLS.indexOf("Dynasty Point Budget (NIL)")]=true;
   while(Object.keys(hiddenLocks).length<5){let r=Math.floor(Math.random()*TEAMS.length),c=1+Math.floor(Math.random()*(COLS.length-1));hiddenLocks[r+'-'+c]=true}
-  return{revealed:{},drafted:{},draftedBy:{},draftedTeams,hiddenLocks,foundLocks:{},eventMap,log:[],points,active:0,activePlayers:[...PLAYERS],history:[],specialAvailable:true,specialAdded:false,turnEndsAt:Date.now()+60000,mustDraft:{}};
+  return{revealed:{},drafted:{},draftedBy:{},draftedTeams,hiddenLocks,foundLocks:{},eventMap,log:[],points,active:0,activePlayers:[...PLAYERS],history:[],specialAvailable:true,specialAdded:false,turnEndsAt:Date.now()+60000,mustDraft:{},forceDraftNow:false};
 }
 
 function load(){try{state=JSON.parse(localStorage.getItem('ncaaDraftV2'))||freshState()}catch(e){state=freshState()}prevPoints={...state.points}}
@@ -365,6 +365,9 @@ function render(){
     const dtd=document.createElement('td');dtd.className='dc';
     const btn=document.createElement('button');btn.className='draftBtn';
     btn.textContent=state.drafted[r]?'DRAFTED':'Draft Team';
+    const forceMe=state.forceDraftNow&&canAct()&&!state.drafted[r];
+    btn.className='draftBtn'+(forceMe?' must':'');
+    if(forceMe)btn.textContent='DRAFT NOW';
     btn.disabled=!!state.drafted[r]||!canAct()||!cp();
     btn.onclick=()=>confirmDraft(r);dtd.appendChild(btn);tr.appendChild(dtd);
     COLS.forEach((col,c)=>{
@@ -398,7 +401,7 @@ function tileClick(r,c){
   if(!canAct())return setMsg('Not your turn.');
   const p=cp(),id=r+'-'+c,col=COLS[c],cost=COSTS[col];
   if(c===0||state.drafted[r])return;
-  if(state.mustDraft[p])return setMsg('You must draft a team this turn!');
+  if(state.mustDraft[p]||state.forceDraftNow)return setMsg('You must draft a team — pick from the board!');
   if(state.points[p]<cost)return setMsg('Not enough points for this tile.');
   snapshot();
   if(state.hiddenLocks[id]){
@@ -433,7 +436,7 @@ function handleEvent(ev){
       ()=>{const arr=state.activePlayers.filter(x=>x!==cp());const t=arr[Math.floor(Math.random()*arr.length)]||cp();spend(t,amt,true);if(!anyAffordable(t))state.mustDraft[t]=true;addLog(`Auto: ${t} lost ${amt} pts.`+(state.mustDraft[t]?' Must draft!':''));closeModal();render()});
   }
   if(ev==='-100 Dynasty Points'){SFX.penalty();const _p=cp();spend(_p,100,true);if(!anyAffordable(_p))state.mustDraft[_p]=true;showInfo('⚡ EVENT',`-100 Dynasty Points for ${_p}!${state.mustDraft[_p]?' Must draft next turn.':''}`)}
-  if(ev==='Must Draft Now')mustDraftNow();
+  if(ev==='Must Draft Now'){state.forceDraftNow=true;setMsg('MUST DRAFT NOW — pick any team from the board!');showToast('MUST DRAFT NOW — tap any Draft Team button!',4000);save();render();}
   if(ev==='Special Team Offer')specialOffer();
 }
 
@@ -498,6 +501,7 @@ function removePlayer(p){
   const i=state.activePlayers.indexOf(p);
   if(i>=0){state.activePlayers.splice(i,1);if(state.active>=state.activePlayers.length)state.active=0}
   delete state.mustDraft[p];
+  state.forceDraftNow=false;
   state.turnEndsAt=Date.now()+60000;
 }
 
@@ -529,6 +533,7 @@ function endTurn(){
 
 function timeoutTurn(){
   const p=cp();if(!p)return;snapshot();
+  if(state.forceDraftNow){const av=TEAMS.map((_,i)=>i).filter(i=>!state.drafted[i]);if(av.length){draftTeam(av[Math.floor(Math.random()*av.length)]);return}}
   let cand=[];
   TEAMS.forEach((_,r)=>{if(!state.drafted[r])COLS.forEach((col,c)=>{const id=r+'-'+c;if(c>0&&!state.revealed[id]&&!state.foundLocks[id])cand.push([r,c])})});
   if(!cand.length)return endTurn();
