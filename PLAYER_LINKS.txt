@@ -1,0 +1,13 @@
+After Netlify deploys, replace YOUR-SITE.netlify.app:
+
+Hagen: https://YOUR-SITE.netlify.app?player=hagen
+Boone: https://YOUR-SITE.netlify.app?player=boone
+Cody: https://YOUR-SITE.netlify.app?player=cody
+Duce: https://YOUR-SITE.netlify.app?player=duce
+Connor: https://YOUR-SITE.netlify.app?player=connor
+Jiffy: https://YOUR-SITE.netlify.app?player=jiffy
+Jacob: https://YOUR-SITE.netlify.app?player=jacob
+Zach: https://YOUR-SITE.netlify.app?player=zach
+
+Duce Admin:
+https://YOUR-SITE.netlify.app?player=duce&admin=true
