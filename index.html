@@ -100,13 +100,6 @@ td.dc{background:#0b1a2e}
 .gold{background:linear-gradient(180deg,#7a5f10,#5a4008);border-color:var(--gold);color:var(--gold)}
 
 /* ── Mascot modal ── */
-.mascotOverlay{position:fixed;inset:0;z-index:30;background:#fff;overflow:hidden}
-#mascotImg{position:absolute;right:0;top:0;bottom:0;width:68%;object-fit:contain;object-position:center right;mix-blend-mode:multiply}
-.mascotSign{position:absolute;z-index:2;background:#fff;border:4px solid #1e2d4a;border-radius:3px;display:flex;flex-direction:column;padding:10px;overflow:hidden;box-shadow:inset 0 0 0 2px rgba(0,0,0,.06)}
-.mascotTitle{font-family:'Oswald',sans-serif;font-size:16px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#0a1428;line-height:1.1;margin-bottom:4px;flex-shrink:0}
-.mascotText{font-size:11px;color:#1a2a3a;line-height:1.35;margin-bottom:6px;flex:1;overflow:hidden}
-.mascotActs{display:grid;gap:5px;flex-shrink:0}
-.mascotActs button{min-height:40px;font-size:13px;font-weight:800;border-radius:8px;border:1px solid;cursor:pointer;width:100%;font-family:'Oswald',sans-serif;letter-spacing:.06em;text-transform:uppercase}
 
 /* ── YOUR TURN popup ── */
 .ytOverlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.88);z-index:50;backdrop-filter:blur(6px)}
@@ -194,14 +187,6 @@ td.dc{background:#0b1a2e}
   </div>
 </div>
 
-<div id="mascotModal" class="mascotOverlay hidden">
-  <div class="mascotBg"><img id="mascotImg" src="" alt="" /></div>
-  <div class="mascotSign" id="mascotSign">
-    <div class="mascotTitle" id="mascotTitle"></div>
-    <div class="mascotText" id="mascotText"></div>
-    <div class="mascotActs" id="mascotActs"></div>
-  </div>
-</div>
 
 <div id="ytDiv" class="ytOverlay hidden">
   <div class="ytBox" id="ytBox">
@@ -514,12 +499,12 @@ function handleEvent(ev){
       t=>{snapshot();spend(t,amt,true);if(!anyAffordable(t))state.mustDraft[t]=true;addLog(t+` lost ${amt} pts.`+(state.mustDraft[t]?' Must draft!':''));closeModal();render()},
       ()=>{const arr=state.activePlayers.filter(x=>x!==cp());const t=arr[Math.floor(Math.random()*arr.length)]||cp();spend(t,amt,true);if(!anyAffordable(t))state.mustDraft[t]=true;addLog(`Auto: ${t} lost ${amt} pts.`+(state.mustDraft[t]?' Must draft!':''));closeModal();render()});
   }
-  if(ev==='-100 Dynasty Points'){SFX.penalty();const _p=cp();spend(_p,100,true);if(!anyAffordable(_p))state.mustDraft[_p]=true;showInfo('⚡ -100 DYNASTY POINTS',`${_p} loses 100 pts!${state.mustDraft[_p]?' Must draft next turn.':''}`,randMascot());}
-  if(ev==='+100 Dynasty Points'){state.points[cp()]+=100;showInfo('💰 BONUS POINTS',`+100 Dynasty Points for ${cp()}!`,randMascot());}
+  if(ev==='-100 Dynasty Points'){SFX.penalty();const _p=cp();spend(_p,100,true);if(!anyAffordable(_p))state.mustDraft[_p]=true;showInfo('⚡ EVENT',`-100 Dynasty Points for ${_p}!${state.mustDraft[_p]?' Must draft next turn.':''}`);}
+  if(ev==='+100 Dynasty Points'){state.points[cp()]+=100;showInfo('💰 BONUS!',`+100 Dynasty Points for ${cp()}!`);}
   if(ev==='All Players Lose 50 Dynasty Points'){
     SFX.event();
     state.activePlayers.forEach(p=>{spend(p,50,true);if(!anyAffordable(p))state.mustDraft[p]=true;});
-    showInfo('💥 ALL PLAYERS LOSE 50','Everyone loses 50 Dynasty Points!',randMascot());
+    showInfo('💥 ALL PLAYERS LOSE 50','Everyone loses 50 Dynasty Points!');
     addLog('ALL players lost 50 pts!');
   }
   if(ev==='Choose Player Steal 75 Dynasty Points'){
@@ -539,21 +524,19 @@ function handleEvent(ev){
 }
 
 function chooseTarget(prompt,cb,to){
-  showTimed('⚡ CHOOSE TARGET',prompt,state.activePlayers.filter(p=>p!==cp()).map(p=>[p,'gold',()=>cb(p)]),to,randMascot());
+  showTimed('⚡ CHOOSE TARGET',prompt,state.activePlayers.filter(p=>p!==cp()).map(p=>[p,'gold',()=>cb(p)]),to);
 }
 function mustDraftNow(){
   showTimed('🚨 MUST DRAFT NOW','You must draft a team immediately — no passing.',
     TEAMS.map((t,i)=>state.drafted[i]?null:[t.University,'yes',()=>{closeModal();snapshot();draftTeam(i)}]).filter(Boolean),
-    ()=>{const av=TEAMS.map((_,i)=>i).filter(i=>!state.drafted[i]);if(av.length){snapshot();draftTeam(av[Math.floor(Math.random()*av.length)])}},randMascot());
+    ()=>{const av=TEAMS.map((_,i)=>i).filter(i=>!state.drafted[i]);if(av.length){snapshot();draftTeam(av[Math.floor(Math.random()*av.length)])}});
 }
 function specialOffer(){
-  if(!state.specialAvailable){
-    showInfo('SPECIAL TEAM','SPECIAL TEAM ALREADY CLAIMED.',randMascot());return;
-  }
+  if(!state.specialAvailable){showInfo('SPECIAL TEAM','SPECIAL TEAM ALREADY CLAIMED.');return;}
   showTimed('⭐ SPECIAL TEAM OFFER','A special team has entered the draft. Would you like to draft this team?',
     [['Draft Special Team','gold',()=>{closeModal();snapshot();draftSpecial()}],
      ['Pass','no',()=>{state.specialAvailable=false;addLog('Special team offer passed.');closeModal();save();render()}]],
-    ()=>{state.specialAvailable=false;addLog('Special team auto-passed.');closeModal();save();render()},randMascot());
+    ()=>{state.specialAvailable=false;addLog('Special team auto-passed.');closeModal();save();render()});
 }
 
 function confirmDraft(r){
@@ -654,19 +637,14 @@ function showModal(title,text,buttons){
   buttons.forEach(([l,cls,fn])=>{const b=document.createElement('button');b.textContent=l;b.className=cls;b.onclick=fn;a.appendChild(b)});
   document.getElementById('modal').classList.remove('hidden');
 }
-function showTimed(title,text,buttons,to,mascot){
+function showTimed(title,text,buttons,to){
   let left=25;
-  const txt=text+`<br><br><b id="etxt" style="color:var(--gold)">${left}s remaining</b>`;
-  if(mascot!==undefined)showMascotModal(title,txt,buttons,mascot);
-  else showModal(title,txt,buttons);
+  showModal(title,text+`<br><br><b id="etxt" style="color:var(--gold)">${left}s remaining</b>`,buttons);
   modalTimer=setInterval(()=>{left--;const e=document.getElementById('etxt');if(e)e.textContent=left+'s remaining';if(left<=0){clearEventTimer();to()}},1000);
 }
 function clearEventTimer(){if(modalTimer){clearInterval(modalTimer);modalTimer=null}}
-function closeModal(){clearEventTimer();document.getElementById('modal').classList.add('hidden');closeMascotModal()}
-function showInfo(t,x,mascot){
-  if(mascot!==undefined)showMascotModal(t,x,[['OK','yes',closeModal]],mascot);
-  else showModal(t,x,[['OK','yes',closeModal]]);
-}
+function closeModal(){clearEventTimer();document.getElementById('modal').classList.add('hidden')}
+function showInfo(t,x){showModal(t,x,[['OK','yes',closeModal]])}
 
 // ── Admin ──
 function adminSetActive(){
@@ -704,60 +682,6 @@ function updateTimer(){
   if(left<=0){SFX.buzz();state.turnEndsAt=Date.now()+999999;timeoutTurn()}
 }
 
-// ── Mascot modal ──
-// img, sign position: {right,top,width,height} as % — or {left,top,width,height} for center-holders
-const TEAM_MASCOTS={
-  "Akron":          {img:"mascot-akron.png",          s:{left:14,top:50,width:68,height:40}},
-  "Ball State":     {img:"mascot-ballstate.png",      s:{right:2, top:18,width:44,height:56}},
-  "Buffalo":        {img:"mascot-buffalo.png",         s:{right:2, top:18,width:44,height:56}},
-  "Delaware":       {img:"mascot-delaware.png",        s:{right:2, top:14,width:46,height:58}},
-  "FIU":            {img:"mascot-fiu.png",             s:{right:2, top:18,width:44,height:56}},
-  "Georgia State":  {img:"mascot-georgiastate.png",    s:{right:2, top:18,width:44,height:56}},
-  "Kennesaw State": {img:"mascot-kennesaw.png",        s:{right:2, top:16,width:46,height:56}},
-  "Kent State":     {img:"mascot-kentstate.png",       s:{right:2, top:14,width:46,height:58}},
-  "Missouri State": {img:"mascot-missouristate.png",   s:{right:2, top:14,width:44,height:60}},
-  "New Mexico State":{img:"mascot-newmexicostate.png", s:{right:2, top:18,width:46,height:54}},
-  "Old Dominion":   {img:"mascot-oldominion.png",      s:{right:2, top:14,width:46,height:58}},
-  "Rice":           {img:"mascot-rice.png",            s:{right:2, top:14,width:46,height:58}},
-  "Sacramento State":{img:"mascot-sacstate.png",       s:{right:2, top:16,width:44,height:56}},
-  "Sam Houston":    {img:"mascot-samhouston.png",      s:{right:2, top:12,width:48,height:60}},
-  "South Alabama":  {img:"mascot-southalabama.png",    s:{right:2, top:14,width:46,height:58}},
-  "UL Monroe":      {img:"mascot-ulmonroe.png",        s:{left:14,top:50,width:68,height:40}},
-  "UMASS":          {img:"mascot-umass.png",           s:{right:2, top:16,width:46,height:56}},
-  "North Dakota State":{img:"mascot-ndsu.png",         s:{left:14,top:48,width:68,height:42}},
-  "Jax State":      {img:"mascot-utep.png",            s:{right:2, top:16,width:46,height:56}},
-};
-const ALL_MASCOTS=Object.values(TEAM_MASCOTS);
-function randMascot(){return ALL_MASCOTS[Math.floor(Math.random()*ALL_MASCOTS.length)]}
-
-function showMascotModal(title,text,buttons,mascotData){
-  const m=mascotData||randMascot();
-  const img=document.getElementById('mascotImg');
-  const sign=document.getElementById('mascotSign');
-  document.getElementById('mascotTitle').textContent=title;
-  document.getElementById('mascotText').innerHTML=text;
-  const a=document.getElementById('mascotActs');a.innerHTML='';
-  buttons.forEach(([l,cls,fn])=>{const b=document.createElement('button');b.textContent=l;b.className=cls;b.onclick=fn;a.appendChild(b)});
-  document.getElementById('mascotModal').classList.remove('hidden');
-  img.src=m.img||m;
-  function placeSign(){
-    const s=m.s||{right:2,top:20,width:44,height:54};
-    const vw=window.innerWidth,vh=window.innerHeight;
-    const imgW=vw*0.68,imgH=vh;
-    const nat=img.naturalWidth/img.naturalHeight;
-    let rw,rh,rx,ry;
-    if(imgW/imgH>nat){rh=imgH;rw=rh*nat;rx=vw-rw;ry=0;}
-    else{rw=imgW;rh=rw/nat;rx=vw-rw;ry=(imgH-rh)/2;}
-    const sl=s.right!==undefined?rx+rw*(1-s.right/100-s.width/100):rx+rw*s.left/100;
-    sign.style.left=sl+'px';
-    sign.style.top=(ry+rh*s.top/100)+'px';
-    sign.style.width=(rw*s.width/100)+'px';
-    sign.style.height=(rh*s.height/100)+'px';
-  }
-  if(img.complete&&img.naturalWidth)placeSign();
-  else img.onload=placeSign;
-}
-function closeMascotModal(){document.getElementById('mascotModal').classList.add('hidden')}
 
 // ── Big Red ──
 function showBigRed(){
