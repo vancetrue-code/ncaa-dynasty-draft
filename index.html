@@ -100,14 +100,14 @@ td.dc{background:#0b1a2e}
 .gold{background:linear-gradient(180deg,#7a5f10,#5a4008);border-color:var(--gold);color:var(--gold)}
 
 /* ── Mascot modal ── */
-.mascotOverlay{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.92);display:flex;align-items:flex-end;backdrop-filter:blur(5px)}
-.mascotPanel{flex:1;min-width:0;padding:20px 16px calc(20px + env(safe-area-inset-bottom));display:flex;flex-direction:column;justify-content:flex-end;gap:8px}
-.mascotTitle{font-family:'Oswald',sans-serif;font-size:22px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);line-height:1.1;margin-bottom:4px}
-.mascotText{font-size:13px;color:#cfe0f5;line-height:1.4;margin-bottom:4px}
-.mascotActs{display:grid;gap:7px}
-.mascotActs button{min-height:50px;font-size:15px;font-weight:800;border-radius:12px;border:1px solid;cursor:pointer;width:100%;font-family:'Oswald',sans-serif;letter-spacing:.06em;text-transform:uppercase}
-.mascotImgWrap{width:48%;max-width:220px;flex-shrink:0;align-self:flex-end;position:relative;overflow:hidden}
-.mascotImgWrap img{width:100%;height:auto;display:block;mix-blend-mode:multiply;filter:contrast(1.05)}
+.mascotOverlay{position:fixed;inset:0;z-index:30;background:#fff;display:flex;align-items:stretch}
+.mascotBg{position:absolute;inset:0;z-index:0}
+.mascotBg img{width:100%;height:100%;object-fit:cover;object-position:center top;mix-blend-mode:multiply}
+.mascotSign{position:absolute;z-index:2;background:#fff;border:4px solid #1a1a2e;border-radius:4px;display:flex;flex-direction:column;padding:12px 10px;box-shadow:inset 0 0 0 2px rgba(0,0,0,.08)}
+.mascotTitle{font-family:'Oswald',sans-serif;font-size:17px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#0a1428;line-height:1.1;margin-bottom:5px}
+.mascotText{font-size:12px;color:#1a2a3a;line-height:1.4;margin-bottom:8px;flex:1}
+.mascotActs{display:grid;gap:6px}
+.mascotActs button{min-height:44px;font-size:14px;font-weight:800;border-radius:10px;border:1px solid;cursor:pointer;width:100%;font-family:'Oswald',sans-serif;letter-spacing:.06em;text-transform:uppercase}
 
 /* ── YOUR TURN popup ── */
 .ytOverlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.88);z-index:50;backdrop-filter:blur(6px)}
@@ -196,13 +196,11 @@ td.dc{background:#0b1a2e}
 </div>
 
 <div id="mascotModal" class="mascotOverlay hidden">
-  <div class="mascotPanel">
+  <div class="mascotBg"><img id="mascotImg" src="" alt="" /></div>
+  <div class="mascotSign" id="mascotSign">
     <div class="mascotTitle" id="mascotTitle"></div>
     <div class="mascotText" id="mascotText"></div>
     <div class="mascotActs" id="mascotActs"></div>
-  </div>
-  <div class="mascotImgWrap">
-    <img id="mascotImg" src="" alt="" />
   </div>
 </div>
 
@@ -708,24 +706,40 @@ function updateTimer(){
 }
 
 // ── Mascot modal ──
+// img, sign position: {right,top,width,height} as % — or {left,top,width,height} for center-holders
 const TEAM_MASCOTS={
-  "Akron":"mascot-akron.png","Ball State":"mascot-ballstate.png",
-  "Buffalo":"mascot-buffalo.png","Delaware":"mascot-delaware.png",
-  "FIU":"mascot-fiu.png","Georgia State":"mascot-georgiastate.png",
-  "Kennesaw State":"mascot-kennesaw.png","Kent State":"mascot-kentstate.png",
-  "Missouri State":"mascot-missouristate.png","New Mexico State":"mascot-newmexicostate.png",
-  "Old Dominion":"mascot-oldominion.png","Rice":"mascot-rice.png",
-  "Sacramento State":"mascot-sacstate.png","Sam Houston":"mascot-samhouston.png",
-  "South Alabama":"mascot-southalabama.png","UL Monroe":"mascot-ulmonroe.png",
-  "UMASS":"mascot-umass.png","North Dakota State":"mascot-ndsu.png",
-  "Jax State":"mascot-utep.png"
+  "Akron":          {img:"mascot-akron.png",          s:{left:14,top:50,width:68,height:40}},
+  "Ball State":     {img:"mascot-ballstate.png",      s:{right:2, top:18,width:44,height:56}},
+  "Buffalo":        {img:"mascot-buffalo.png",         s:{right:2, top:18,width:44,height:56}},
+  "Delaware":       {img:"mascot-delaware.png",        s:{right:2, top:14,width:46,height:58}},
+  "FIU":            {img:"mascot-fiu.png",             s:{right:2, top:18,width:44,height:56}},
+  "Georgia State":  {img:"mascot-georgiastate.png",    s:{right:2, top:18,width:44,height:56}},
+  "Kennesaw State": {img:"mascot-kennesaw.png",        s:{right:2, top:16,width:46,height:56}},
+  "Kent State":     {img:"mascot-kentstate.png",       s:{right:2, top:14,width:46,height:58}},
+  "Missouri State": {img:"mascot-missouristate.png",   s:{right:2, top:14,width:44,height:60}},
+  "New Mexico State":{img:"mascot-newmexicostate.png", s:{right:2, top:18,width:46,height:54}},
+  "Old Dominion":   {img:"mascot-oldominion.png",      s:{right:2, top:14,width:46,height:58}},
+  "Rice":           {img:"mascot-rice.png",            s:{right:2, top:14,width:46,height:58}},
+  "Sacramento State":{img:"mascot-sacstate.png",       s:{right:2, top:16,width:44,height:56}},
+  "Sam Houston":    {img:"mascot-samhouston.png",      s:{right:2, top:12,width:48,height:60}},
+  "South Alabama":  {img:"mascot-southalabama.png",    s:{right:2, top:14,width:46,height:58}},
+  "UL Monroe":      {img:"mascot-ulmonroe.png",        s:{left:14,top:50,width:68,height:40}},
+  "UMASS":          {img:"mascot-umass.png",           s:{right:2, top:16,width:46,height:56}},
+  "North Dakota State":{img:"mascot-ndsu.png",         s:{left:14,top:48,width:68,height:42}},
+  "Jax State":      {img:"mascot-utep.png",            s:{right:2, top:16,width:46,height:56}},
 };
 const ALL_MASCOTS=Object.values(TEAM_MASCOTS);
 function randMascot(){return ALL_MASCOTS[Math.floor(Math.random()*ALL_MASCOTS.length)]}
 
-function showMascotModal(title,text,buttons,mascotSrc){
+function showMascotModal(title,text,buttons,mascotData){
+  const m=mascotData||randMascot();
   const img=document.getElementById('mascotImg');
-  img.src=mascotSrc||randMascot();
+  img.src=m.img||m;
+  const sign=document.getElementById('mascotSign');
+  const s=m.s||{right:2,top:16,width:46,height:56};
+  sign.style.cssText=`position:absolute;z-index:2;background:#fff;border:4px solid #1a1a2e;border-radius:4px;display:flex;flex-direction:column;padding:12px 10px;box-shadow:inset 0 0 0 2px rgba(0,0,0,.08);`;
+  if(s.right!==undefined)sign.style.right=s.right+'%';else sign.style.left=s.left+'%';
+  sign.style.top=s.top+'%';sign.style.width=s.width+'%';sign.style.height=s.height+'%';
   document.getElementById('mascotTitle').textContent=title;
   document.getElementById('mascotText').innerHTML=text;
   const a=document.getElementById('mascotActs');a.innerHTML='';
