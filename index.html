@@ -551,12 +551,12 @@ function mustDraftNow(){
 }
 function specialOffer(){
   if(!state.specialAvailable){
-    showInfo('SPECIAL TEAM','SPECIAL TEAM ALREADY CLAIMED.',TEAM_MASCOTS['North Dakota State']);return;
+    showInfo('SPECIAL TEAM','SPECIAL TEAM ALREADY CLAIMED.',randMascot());return;
   }
   showTimed('⭐ SPECIAL TEAM OFFER','A special team has entered the draft. Would you like to draft this team?',
     [['Draft Special Team','gold',()=>{closeModal();snapshot();draftSpecial()}],
      ['Pass','no',()=>{state.specialAvailable=false;addLog('Special team offer passed.');closeModal();save();render()}]],
-    ()=>{state.specialAvailable=false;addLog('Special team auto-passed.');closeModal();save();render()},TEAM_MASCOTS['North Dakota State']);
+    ()=>{state.specialAvailable=false;addLog('Special team auto-passed.');closeModal();save();render()},randMascot());
 }
 
 function confirmDraft(r){
